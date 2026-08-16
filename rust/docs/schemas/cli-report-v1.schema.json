@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kadishutu.example/schemas/cli-report-v1.schema.json",
+  "title": "Kadishutu CLI report version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "command", "ok", "data", "warnings", "error"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "command": {"enum": ["validate", "inspect", "get", "decrypt", "encrypt", "set"]},
+    "ok": {"type": "boolean"},
+    "data": {"type": ["object", "null"]},
+    "warnings": {"type": "array", "items": {"$ref": "#/$defs/warning"}},
+    "error": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/error"}]}
+  },
+  "$defs": {
+    "warning": {
+      "type": "object", "additionalProperties": false, "required": ["code", "message"],
+      "properties": {"code": {"type": "string"}, "message": {"type": "string"}, "field": {"type": "string"}}
+    },
+    "error": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "message"],
+      "properties": {"kind": {"type": "string"}, "message": {"type": "string"}}
+    },
+    "conversion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_path", "output_path", "profile", "input_kind", "output_kind", "file_length"],
+      "properties": {
+        "input_path": {"type": "string"},
+        "output_path": {"type": "string"},
+        "profile": {"const": "smtvv-pc-gamesave-449680"},
+        "input_kind": {"enum": ["decrypted", "encrypted"]},
+        "output_kind": {"enum": ["decrypted", "encrypted"]},
+        "file_length": {"const": 449680}
+      }
+    },
+    "byte_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 1}
+      }
+    },
+    "mutation_validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["length", "gvas", "sha1", "structure"],
+      "properties": {
+        "length": {"const": "pass"},
+        "gvas": {"const": "pass"},
+        "sha1": {"const": "pass"},
+        "structure": {"const": "pass"}
+      }
+    },
+    "mutation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_path", "output_path", "profile", "request", "input_kind", "output_kind",
+        "owned_ranges", "changed_ranges", "sha1_changed", "pre_validation",
+        "post_validation", "dry_run", "output_written"
+      ],
+      "properties": {
+        "input_path": {"type": "string"},
+        "output_path": {"type": "string"},
+        "profile": {"const": "smtvv-pc-gamesave-449680"},
+        "request": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["field", "value"],
+          "properties": {
+            "field": {"type": "string"},
+            "value": {"type": "string"}
+          }
+        },
+        "input_kind": {"enum": ["decrypted", "encrypted"]},
+        "output_kind": {"enum": ["decrypted", "encrypted"]},
+        "owned_ranges": {"type": "array", "items": {"$ref": "#/$defs/byte_range"}},
+        "changed_ranges": {"type": "array", "items": {"$ref": "#/$defs/byte_range"}},
+        "sha1_changed": {"type": "boolean"},
+        "pre_validation": {"$ref": "#/$defs/mutation_validation"},
+        "post_validation": {"$ref": "#/$defs/mutation_validation"},
+        "dry_run": {"type": "boolean"},
+        "output_written": {"type": "boolean"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"command": {"enum": ["decrypt", "encrypt"]}}, "required": ["command"]},
+      "then": {
+        "properties": {
+          "data": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/conversion"}]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"command": {"const": "set"}}, "required": ["command"]},
+      "then": {
+        "properties": {
+          "data": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/mutation"}]}
+        }
+      }
+    }
+  ]
+}

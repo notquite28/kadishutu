@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kadishutu.example/schemas/corpus-manifest-v1.schema.json",
+  "title": "Kadishutu private corpus manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "cases"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "cases": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/case"}
+    }
+  },
+  "$defs": {
+    "anonymousId": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "source_group", "platform", "title_id", "game_version", "dlc_state",
+        "route_progression", "encryption_state", "encrypted_sha256", "decrypted_sha256",
+        "expected_profile", "expected_validation", "controlled_value_fields", "provenance",
+        "redistribution", "privacy_reviewed"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/anonymousId"},
+        "source_group": {"$ref": "#/$defs/anonymousId"},
+        "platform": {"enum": ["pc", "switch"]},
+        "title_id": {"type": ["string", "null"]},
+        "game_version": {"type": "string", "minLength": 1},
+        "dlc_state": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/anonymousId"}},
+        "route_progression": {"type": "string", "minLength": 1},
+        "encryption_state": {
+          "const": {"decrypted_member": "decrypted", "encrypted_member": "encrypted"}
+        },
+        "encrypted_sha256": {"$ref": "#/$defs/sha256"},
+        "decrypted_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_profile": {"anyOf": [{"$ref": "#/$defs/anonymousId"}, {"type": "null"}]},
+        "expected_validation": {"enum": ["valid", "invalid", "unrecognized"]},
+        "controlled_value_fields": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"}},
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["origin", "pairing_tool", "independent_validation", "collected_date"],
+          "properties": {
+            "origin": {"type": "string", "minLength": 1},
+            "pairing_tool": {"type": "string", "minLength": 1},
+            "independent_validation": {"type": "string", "minLength": 1},
+            "collected_date": {"type": "string", "format": "date"}
+          }
+        },
+        "redistribution": {"enum": ["prohibited", "private-test-only", "approved"]},
+        "privacy_reviewed": {"const": true}
+      }
+    }
+  }
+}

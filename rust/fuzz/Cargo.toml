@@ -1,0 +1,52 @@
+[package]
+name = "kadishutu-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+rust-version = "1.85"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+kadishutu = { path = ".." }
+serde_json = "1"
+
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "detect"
+path = "fuzz_targets/detect.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "unreal_header"
+path = "fuzz_targets/unreal_header.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "report"
+path = "fuzz_targets/report.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "crypto"
+path = "fuzz_targets/crypto.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "mutation"
+path = "fuzz_targets/mutation.rs"
+test = false
+doc = false
+bench = false

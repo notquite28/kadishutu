@@ -1,0 +1,89 @@
+{
+  "cases": [
+    {
+      "controlled_value_fields": [],
+      "decrypted_sha256": "3177421340fea77d74569c8b912b7a56ff34be9b652c5f19ff551df3f2b26ff7",
+      "dlc_state": [
+        "unknown"
+      ],
+      "encrypted_sha256": "a4a1642e0a4ffbb638ddc7b5f1da45afe6fef7de4945e8bc739f1846378a9cf8",
+      "encryption_state": {
+        "decrypted_member": "decrypted",
+        "encrypted_member": "encrypted"
+      },
+      "expected_profile": "smtvv-pc-gamesave-449680",
+      "expected_validation": "valid",
+      "game_version": "unknown",
+      "id": "pc-internet-01a",
+      "platform": "pc",
+      "privacy_reviewed": true,
+      "provenance": {
+        "collected_date": "2026-08-15",
+        "independent_validation": "Source states PC SMT V Vengeance; GVAS, SHA-1 coverage, exact header, and Rust structural checks passed.",
+        "origin": "https://gamebanana.com/mods/622103",
+        "pairing_tool": "Legacy Python AES decrypt command."
+      },
+      "redistribution": "private-test-only",
+      "route_progression": "Cycle 1, Canon of Vengeance Law; exact story point unknown.",
+      "source_group": "pc-internet-01",
+      "title_id": null
+    },
+    {
+      "controlled_value_fields": [],
+      "decrypted_sha256": "596b02b54b50951594e55b441fad3e1e051fadc60ef5c08d2282842ccf23262e",
+      "dlc_state": [
+        "unknown"
+      ],
+      "encrypted_sha256": "1f8e8830aae959ae9c4662d086104f352a22185d7dfa26091093b55822cec735",
+      "encryption_state": {
+        "decrypted_member": "decrypted",
+        "encrypted_member": "encrypted"
+      },
+      "expected_profile": "smtvv-pc-gamesave-449680",
+      "expected_validation": "valid",
+      "game_version": "unknown",
+      "id": "pc-owner-01a",
+      "platform": "pc",
+      "privacy_reviewed": true,
+      "provenance": {
+        "collected_date": "2026-08-15",
+        "independent_validation": "GVAS, SHA-1 coverage, exact header, and Rust structural checks passed.",
+        "origin": "Private save supplied by its player.",
+        "pairing_tool": "Legacy Python AES decrypt command."
+      },
+      "redistribution": "private-test-only",
+      "route_progression": "Approximately level 30; route and exact story point unknown.",
+      "source_group": "pc-owner-01",
+      "title_id": null
+    },
+    {
+      "controlled_value_fields": [],
+      "decrypted_sha256": "677be3f4e938f9bc13a58b041dee2b0fa0e7bdbc7c7c56655d3f9130f3b9a8ae",
+      "dlc_state": [
+        "unknown"
+      ],
+      "encrypted_sha256": "24acf64e3cd5169a4459af853ee3a9257366516f93ccd758b26e21cdeee90952",
+      "encryption_state": {
+        "decrypted_member": "decrypted",
+        "encrypted_member": "encrypted"
+      },
+      "expected_profile": "smtvv-pc-gamesave-449680",
+      "expected_validation": "valid",
+      "game_version": "unknown",
+      "id": "pc-owner-01b",
+      "platform": "pc",
+      "privacy_reviewed": true,
+      "provenance": {
+        "collected_date": "2026-08-15",
+        "independent_validation": "GVAS, SHA-1 coverage, exact header, and Rust structural checks passed.",
+        "origin": "Private save supplied by its player.",
+        "pairing_tool": "Legacy Python AES decrypt command."
+      },
+      "redistribution": "private-test-only",
+      "route_progression": "Route and exact story point unknown.",
+      "source_group": "pc-owner-01",
+      "title_id": null
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,0 +1,3243 @@
+{
+  "corpus_ids": [
+    "pc-internet-01a",
+    "pc-owner-01a",
+    "pc-owner-01b"
+  ],
+  "data_tables": [
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/README.md",
+      "platform_build": null,
+      "sha256": "923cf776e5981e8af14ab2ee7e79bdf5b45052bd59f5056afb1e4f193df29279",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/SMT5V NKM Base Table_Navi Devil Data - Item Names.csv",
+      "platform_build": null,
+      "sha256": "b8a2f24ad31bf542bf15a7adcbb8aad58fb05bf3aa0324303765ecb139db7374",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "Added Pot prefixes to potential columns.",
+      "path": "src/kadishutu/data/tables/SMT5V NKM Base Table_Navi Devil Data - Players.csv",
+      "platform_build": null,
+      "sha256": "a9a9806f65751c92415b3195c5d28209d0e460622eeb271b65628cb0bc960317",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "Replaced the infinity symbol with inf.",
+      "path": "src/kadishutu/data/tables/SMT5V Skill Data Tables - ActionSkills.csv",
+      "platform_build": null,
+      "sha256": "f1829ed362429f7c448cffb642a8f21672d8196838d18c26716d7972e20f56b7",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/SMT5V Skill Data Tables - AutoSkills.csv",
+      "platform_build": null,
+      "sha256": "93de80b87d6c209a71a297e6e96a10dd4fd14e738e61d3dd8970104d1098ad42",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/alignment_data.json",
+      "platform_build": null,
+      "sha256": "787a7d0e6a5ea9d71eadaef18210045a752e199e206a233bbac0ecc0aedd61d1",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/item_extra_data.json",
+      "platform_build": null,
+      "sha256": "c2c189ac96bb01a45fe1faef22c9d26931f7c3b847e7d2f9be2deb93610b313a",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/laylines.json",
+      "platform_build": null,
+      "sha256": "126a8315effac5239636b2e39e2bb1f6405d3ca8190e89fc936a1de2dc0a871d",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/miracle_unlocks.json",
+      "platform_build": null,
+      "sha256": "d2b22a2d0b74e3ef85462a0989f700361828f109f810402667d79ab2ed3eea31",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/miracles.json",
+      "platform_build": null,
+      "sha256": "8e396ba4d8456c2641651fa2b79c5b504e9bf38f54359e080ad18030055c5031",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    },
+    {
+      "local_transformations": "None recorded.",
+      "path": "src/kadishutu/data/tables/save_locs.json",
+      "platform_build": null,
+      "sha256": "a19b3494f9c661f632bc8ddf73a8d750648022a6a29662db4e053c81a7154931",
+      "upstream": "GameBanana post 11793083 and linked Skill/Demon spreadsheets; local README is the provenance record."
+    }
+  ],
+  "defects": [
+    {
+      "description": "Assertions validate user data and optimization can remove them.",
+      "id": "python-assertions",
+      "path": "src/kadishutu/core/shared/editors.py",
+      "stage": "Stage 1 regression",
+      "symbol": "EditorGetter"
+    },
+    {
+      "description": "Entries start at the count instead of after it.",
+      "id": "python-custom-version-overlap",
+      "path": "src/kadishutu/core/shared/unreal_editors.py",
+      "stage": "Stage 1 regression",
+      "symbol": "CustomVersionsEditor.versions"
+    },
+    {
+      "description": "Capacity claims conflict at 30 and 24.",
+      "id": "python-demon-capacity-conflict",
+      "path": "src/kadishutu/core/game_save/demons.py",
+      "stage": "Blocked mutation test",
+      "symbol": "DEMON_TABLE_SIZE and DemonManager.DEMON_STORAGE"
+    },
+    {
+      "description": "Legacy edits overwrite the input without a transaction.",
+      "id": "python-direct-overwrite",
+      "path": "src/kadishutu/editor_cli.py",
+      "stage": "Blocked mutation test",
+      "symbol": "cmd_edit"
+    },
+    {
+      "description": "The +0x380 descriptor aliases later item bytes.",
+      "id": "python-essence-metadata-alias",
+      "path": "src/kadishutu/core/game_save/essences.py",
+      "stage": "Blocked mutation test",
+      "symbol": "EssenceEditor.metadata"
+    },
+    {
+      "description": "Complete boundary and count are unknown.",
+      "id": "python-incomplete-compendium",
+      "path": "src/kadishutu/core/game_save/compendium.py",
+      "stage": "Blocked read test",
+      "symbol": "CompendiumManager"
+    },
+    {
+      "description": "Entry contains unknown bytes and has a provisional boundary.",
+      "id": "python-incomplete-quests",
+      "path": "src/kadishutu/core/game_save/quests.py",
+      "stage": "Blocked read test",
+      "symbol": "QuestEditor"
+    },
+    {
+      "description": "The state method is tested without calling it.",
+      "id": "python-missing-encrypt-call",
+      "path": "src/kadishutu/cli.py",
+      "stage": "Stage 1 absent-command regression",
+      "symbol": "cmd_encrypt"
+    },
+    {
+      "description": "Inspect traverses arbitrary attributes.",
+      "id": "python-reflective-inspect",
+      "path": "src/kadishutu/cli.py",
+      "stage": "Stage 1 regression",
+      "symbol": "cmd_inspect"
+    },
+    {
+      "description": "Command executes arbitrary Python.",
+      "id": "python-run-script",
+      "path": "src/kadishutu/cli.py",
+      "stage": "Stage 1 absent-command regression",
+      "symbol": "cmd_run_script"
+    },
+    {
+      "description": "General stat edits omit proven game-side recalculation behavior.",
+      "id": "python-stats-recalculation",
+      "path": "src/kadishutu/core/game_save/demons.py",
+      "stage": "Blocked mutation test",
+      "symbol": "DemonManager.new_from_initial"
+    }
+  ],
+  "experiments": [
+    {
+      "id": "exp-pc-candidate-01",
+      "result": "Three private PC cases from two independent source groups have length 449680, identical exact UE headers, valid GVAS markers, and stored SHA-1 values that independently match SHA-1 over 0x40..EOF. Their encrypted members are distinct AES-block sequences without plaintext GVAS. Build and DLC metadata remain unknown."
+    }
+  ],
+  "fields": [
+    {
+      "address": {
+        "end": 433405,
+        "kind": "absolute",
+        "start": 433397
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "alignment.flags",
+      "known_unknowns": [
+        "Meanings lack controlled evidence"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "table-driven bits",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/alignment.py",
+          "symbol": "AlignmentEditor"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Alignment flags",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 98930,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 160,
+        "relative_start": 88,
+        "stride": 224
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "compendium.affinities",
+      "known_unknowns": [
+        "Count and complete boundaries are unknown; 256 is only the addressable u8 id space"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "sparse u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/compendium.py",
+          "symbol": "RegisteredDemonEditor.affinities"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Compendium Affinities",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 98930,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 196,
+        "relative_start": 194,
+        "stride": 224
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "compendium.innate_skill",
+      "known_unknowns": [
+        "Count and complete boundaries are unknown; 256 is only the addressable u8 id space"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/compendium.py",
+          "symbol": "RegisteredDemonEditor.innate_skill"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Compendium Innate skill",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 98930,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 85,
+        "relative_start": 84,
+        "stride": 224
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "compendium.level",
+      "known_unknowns": [
+        "Count and complete boundaries are unknown; 256 is only the addressable u8 id space"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/compendium.py",
+          "symbol": "RegisteredDemonEditor.level"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Compendium Level",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 98930,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 166,
+        "relative_start": 144,
+        "stride": 224
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "compendium.potentials",
+      "known_unknowns": [
+        "Count and complete boundaries are unknown; 256 is only the addressable u8 id space"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "11 i16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/compendium.py",
+          "symbol": "RegisteredDemonEditor.potentials"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Compendium Potentials",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 98930,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 87,
+        "relative_start": 86,
+        "stride": 224
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "compendium.registered",
+      "known_unknowns": [
+        "Count and complete boundaries are unknown; 256 is only the addressable u8 id space"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 bool",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/compendium.py",
+          "symbol": "RegisteredDemonEditor.registered"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Compendium Registered",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 98930,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 84,
+        "relative_start": 64,
+        "stride": 224
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "compendium.skills",
+      "known_unknowns": [
+        "Count and complete boundaries are unknown; 256 is only the addressable u8 id space"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u16 entries",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/compendium.py",
+          "symbol": "RegisteredDemonEditor.skills"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Compendium Skills",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 98930,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 32,
+        "relative_start": 16,
+        "stride": 224
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "compendium.stats_changes",
+      "known_unknowns": [
+        "Count and complete boundaries are unknown; 256 is only the addressable u8 id space"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "8 u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/compendium.py",
+          "symbol": "RegisteredDemonEditor.stats_changes"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Compendium Stat changes",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 98930,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 16,
+        "relative_start": 0,
+        "stride": 224
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "compendium.stats_original",
+      "known_unknowns": [
+        "Count and complete boundaries are unknown; 256 is only the addressable u8 id space"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "8 u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/compendium.py",
+          "symbol": "RegisteredDemonEditor.stats_original"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Compendium Original stats",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 288,
+        "relative_start": 216,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.affinities",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "sparse u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.affinities"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Affinities",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 76,
+        "relative_start": 74,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.demon_haunt_talks",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.dh_talks"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Demon Haunt Talks",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 328,
+        "relative_start": 272,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.erase_defaults",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Erase overwrites the complete entry"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "28 strided u8 values",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.erase_defaults"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Erase Defaults",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 24,
+        "kind": "strided",
+        "relative_end": 424,
+        "relative_start": 0,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.erase_entry",
+      "known_unknowns": [
+        "Complete entry meaning and capacity are unresolved"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Sets id, marker, and 28 defaults after zero fill"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "424-byte fill",
+      "python_sources": [
+        {
+          "access": "write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.erase"
+        }
+      ],
+      "read_state": "experimental",
+      "semantic_name": "Bulk demon erase",
+      "sensitive": false,
+      "write_state": "experimental"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 118,
+        "relative_start": 117,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.erase_marker",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Erase overwrites the complete entry"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.erase_marker"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Erase Marker",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 112,
+        "relative_start": 104,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.experience",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u64",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.exp"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Experience",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 72,
+        "relative_start": 68,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.friendship",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.friendship"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Friendship",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 104,
+        "relative_start": 100,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.healable",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "two u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.healable"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Healable",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 116,
+        "relative_start": 114,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.id",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.id"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Id",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 412,
+        "relative_start": 408,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.innate_skill",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.innate_skill"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Innate Skill",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 113,
+        "relative_start": 112,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.level",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.level"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Level",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 24,
+        "kind": "strided",
+        "relative_end": 424,
+        "relative_start": 0,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.manager_capacity",
+      "known_unknowns": [
+        "Conflicts with DEMON_TABLE_SIZE=30"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "24 entries",
+      "python_sources": [
+        {
+          "access": "claim",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonManager.DEMON_STORAGE"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Demon manager 24-entry claim",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 406,
+        "relative_start": 384,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.potentials",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "11 i16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.potentials"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Potentials",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 184,
+        "relative_start": 120,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.skills",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "8-byte entries",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.skills"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Skills",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 48,
+        "relative_start": 0,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.stats",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "three stat groups",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.stats"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Stats",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 2912,
+        "count": 30,
+        "kind": "strided",
+        "relative_end": 100,
+        "relative_start": 96,
+        "stride": 424
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.summoned_flag",
+      "known_unknowns": [
+        "30-entry constant conflicts with 24-entry manager iteration"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DemonEditor.is_summoned"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Summoned Flag",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 15632,
+        "kind": "absolute",
+        "start": 2912
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "demons.table_capacity_constant",
+      "known_unknowns": [
+        "Conflicts with DEMON_STORAGE=24"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "30 entries of 424 bytes",
+      "python_sources": [
+        {
+          "access": "claim",
+          "path": "src/kadishutu/core/game_save/demons.py",
+          "symbol": "DEMON_TABLE_SIZE"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Demon table 30-entry claim",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 20687,
+        "count": 395,
+        "kind": "strided",
+        "relative_end": 1,
+        "relative_start": 0,
+        "stride": 1
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "essences.metadata",
+      "known_unknowns": [
+        "Likely descriptor alias defect"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Global +0x380 offset aliases later item bytes"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Essence metadata alias",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 19791,
+        "count": 395,
+        "kind": "strided",
+        "relative_end": 1,
+        "relative_start": 0,
+        "stride": 1
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "essences.owned",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Aliases item amount"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 bool",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Essence ownership",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1321,
+        "kind": "absolute",
+        "start": 1320
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.clear_flag",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 bool",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.clear_flag"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Clear Flag",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 434315,
+        "kind": "absolute",
+        "start": 434314
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.cycles",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Primary and preload copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.cycles"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Cycles",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1283,
+        "kind": "absolute",
+        "start": 1282
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.cycles_copy",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Primary and preload copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.cycles_copy"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Cycles Copy",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1277,
+        "kind": "absolute",
+        "start": 1276
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.difficulty",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 enum",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.difficulty"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Difficulty",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1322,
+        "kind": "absolute",
+        "start": 1321
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.dlc_flags",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.dlc"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Dlc Flags",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 434316,
+        "kind": "absolute",
+        "start": 434315
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.endings",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Primary and preload copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.endings"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Endings",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1284,
+        "kind": "absolute",
+        "start": 1283
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.endings_copy",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Primary and preload copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.endings_copy"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Endings Copy",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 15694,
+        "kind": "absolute",
+        "start": 15690
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.glory",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32 little-endian",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.glory"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Glory",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 15670,
+        "kind": "absolute",
+        "start": 15666
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.macca",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32 little-endian",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.macca"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Macca",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 16080,
+        "kind": "absolute",
+        "start": 16078
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.magatsuhi_gauge",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u16 little-endian",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.magatsuhi_gauge"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Magatsuhi Gauge",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1492,
+        "kind": "absolute",
+        "start": 1488
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.play_time_seconds",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32 seconds",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.play_time_seconds"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Play Time Seconds",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1276,
+        "kind": "absolute",
+        "start": 1268
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "game.time_of_saving",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u64 Unreal datetime",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor.time_of_saving"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Time Of Saving",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 117,
+        "kind": "absolute",
+        "start": 113
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "header.custom_version_count",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "55 observed",
+      "platform_build_evidence": [],
+      "primitive": "u32 little-endian",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/shared/unreal_editors.py",
+          "symbol": "CustomVersionsEditor.length"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Custom-version count",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 117,
+        "count": 55,
+        "kind": "strided",
+        "relative_end": 20,
+        "relative_start": 0,
+        "stride": 20
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "header.custom_version_entries",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "55 entries observed",
+      "platform_build_evidence": [],
+      "primitive": "GUID and u32",
+      "python_sources": [
+        {
+          "access": "read",
+          "path": "src/kadishutu/core/shared/unreal_editors.py",
+          "symbol": "CustomVersionsEditor.versions"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Custom-version entries",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "end": 113,
+        "kind": "absolute",
+        "start": 109
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "header.custom_version_format",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "3 observed",
+      "platform_build_evidence": [],
+      "primitive": "u32 little-endian",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/shared/unreal_editors.py",
+          "symbol": "UnrealInternalEditor.custom_version_format"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Custom-version format",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "end": 109,
+        "kind": "absolute",
+        "start": 76
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "header.engine_version",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "4.27.2-0++UE4+Release-4.27 observed",
+      "platform_build_evidence": [],
+      "primitive": "<HHHI and UTF-8 FString",
+      "python_sources": [
+        {
+          "access": "read",
+          "path": "src/kadishutu/core/shared/unreal_editors.py",
+          "symbol": "FEngineVersionEditor.read"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Engine version",
+      "sensitive": false,
+      "write_state": "rejected"
+    },
+    {
+      "address": {
+        "end": 76,
+        "kind": "absolute",
+        "start": 72
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "header.package_file_version",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "522 observed",
+      "platform_build_evidence": [],
+      "primitive": "u32 little-endian",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/shared/unreal_editors.py",
+          "symbol": "UnrealInternalEditor.package_file_version"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Package version",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "end": 1232,
+        "kind": "absolute",
+        "start": 1217
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "header.save_game_class_name",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "SaveObject observed",
+      "platform_build_evidence": [],
+      "primitive": "UTF-8 FString",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/shared/unreal_editors.py",
+          "symbol": "UnrealInternalEditor.save_game_class_name"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Save-game class",
+      "sensitive": false,
+      "write_state": "rejected"
+    },
+    {
+      "address": {
+        "end": 72,
+        "kind": "absolute",
+        "start": 68
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "header.save_game_version",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "2 observed",
+      "platform_build_evidence": [],
+      "primitive": "u32 little-endian",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/shared/unreal_editors.py",
+          "symbol": "UnrealInternalEditor.gsav_version"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Save-game version",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "kind": "none"
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "internal.bulk_fill",
+      "known_unknowns": [
+        "Only approved typed operations may own a range"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "arbitrary byte range",
+      "python_sources": [
+        {
+          "access": "write",
+          "path": "src/kadishutu/core/shared/editors.py",
+          "symbol": "AbstractEditor._fill"
+        }
+      ],
+      "read_state": "rejected",
+      "semantic_name": "Generic bulk fill",
+      "sensitive": false,
+      "write_state": "experimental"
+    },
+    {
+      "address": {
+        "base": 19570,
+        "count": 896,
+        "kind": "strided",
+        "relative_end": 1,
+        "relative_start": 0,
+        "stride": 1
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "items.amounts",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Essence bytes overlap item bytes"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/items.py",
+          "symbol": "ItemManager"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Item amount table",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 16078,
+        "kind": "absolute",
+        "start": 15694
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "miracles.owned",
+      "known_unknowns": [
+        "Exact end and build are unconfirmed"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 table",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/miracles.py",
+          "symbol": "MiracleManager"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Miracle ownership table",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 433381,
+        "kind": "absolute",
+        "start": 433380
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "miracles.satan_beaten",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "bit 4",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/miracle_unlocks.py",
+          "symbol": "ExtraMiracleUnlock.satan_beaten"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Satan beaten bit",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "kind": "none"
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "miracles.unlocks",
+      "known_unknowns": [
+        "External table lacks corpus proof"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "table-driven u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/miracle_unlocks.py",
+          "symbol": "MiracleUnlockManager"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Miracle unlock bytes",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2784,
+        "kind": "absolute",
+        "start": 2712
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.affinities",
+      "known_unknowns": [
+        "Game-side recalculation or sparse gaps are incomplete"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "sparse u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "PlayerEditor.affinities"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player affinities",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2504,
+        "kind": "absolute",
+        "start": 2496
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.experience",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u64",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "PlayerEditor.exp"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player experience",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2496,
+        "kind": "absolute",
+        "start": 2492
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.healable",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "two u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "PlayerEditor.healable"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player HP and MP",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2505,
+        "kind": "absolute",
+        "start": 2504
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.level",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "PlayerEditor.level"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player level",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2616,
+        "kind": "absolute",
+        "start": 2576
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.name.combined",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "All name copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "fixed UTF-16LE bytes",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "NameManager"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Combined name",
+      "sensitive": true,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2528,
+        "kind": "absolute",
+        "start": 2512
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.name.first",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "All name copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "fixed UTF-16LE bytes",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "NameManager"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "First name",
+      "sensitive": true,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2572,
+        "kind": "absolute",
+        "start": 2556
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.name.first_copy",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "All name copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "fixed UTF-16LE bytes",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "NameManager"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "First-name copy",
+      "sensitive": true,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2552,
+        "kind": "absolute",
+        "start": 2536
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.name.last",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "All name copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "fixed UTF-16LE bytes",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "NameManager"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Last name",
+      "sensitive": true,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1256,
+        "kind": "absolute",
+        "start": 1240
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.name.save_slot",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "All name copies must agree"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "fixed UTF-16LE bytes",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "NameManager"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Save-slot name",
+      "sensitive": true,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2894,
+        "kind": "absolute",
+        "start": 2872
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.potentials",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "11 i16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "PlayerEditor.potentials"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player potentials",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2680,
+        "kind": "absolute",
+        "start": 2616
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.skills",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "8-byte entries",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "PlayerEditor.skills"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player skills",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2508,
+        "kind": "absolute",
+        "start": 2506
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.stat_points",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u16",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "PlayerEditor.stat_points"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player stat points",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 2488,
+        "kind": "absolute",
+        "start": 2440
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "player.stats",
+      "known_unknowns": [
+        "Game-side recalculation or sparse gaps are incomplete"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "three stat groups",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/player.py",
+          "symbol": "PlayerEditor.stats"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player stats",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 22170,
+        "kind": "absolute",
+        "start": 22158
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "position.coordinates",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Teleport coordinates map, rotation, layline, and unlock state"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "three f32",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/position.py",
+          "symbol": "PositionEditor.coordinates"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Coordinates",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 22150,
+        "kind": "absolute",
+        "start": 22146
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "position.current_map_lower",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Teleport coordinates map, rotation, layline, and unlock state"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/position.py",
+          "symbol": "PositionEditor.current_map_lower"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Map lower id",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 22146,
+        "kind": "absolute",
+        "start": 22142
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "position.current_map_upper",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Teleport coordinates map, rotation, layline, and unlock state"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/position.py",
+          "symbol": "PositionEditor.current_map_upper"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Map upper id",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 26822,
+        "kind": "absolute",
+        "start": 26821
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "position.last_layline",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Teleport coordinates map, rotation, layline, and unlock state"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/position.py",
+          "symbol": "PositionEditor.last_layline"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Last layline",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "kind": "none"
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "position.layline_unlocks",
+      "known_unknowns": [
+        "Ranges come from laylines.json"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Teleport can set an unlock bit"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "table-driven bits",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/position.py",
+          "symbol": "PositionEditor.layline_unlock"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Layline unlocks",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 22190,
+        "kind": "absolute",
+        "start": 22182
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "position.rotation",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Teleport coordinates map, rotation, layline, and unlock state"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "two f32",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/position.py",
+          "symbol": "PositionEditor.rotation"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Rotation",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 1320,
+        "kind": "absolute",
+        "start": 1316
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "position.title_location",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Teleport coordinates map, rotation, layline, and unlock state"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u32",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/position.py",
+          "symbol": "PositionEditor.title_location"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Title location",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "base": 367954,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 2,
+        "relative_start": 1,
+        "stride": 26
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "quests.done",
+      "known_unknowns": [
+        "Entry size and complete boundary are provisional; 256 is not confirmed"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "State combines in_progress, done, and report"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 bool",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/quests.py",
+          "symbol": "QuestEditor.done"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Quest done",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 367954,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 1,
+        "relative_start": 0,
+        "stride": 26
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "quests.in_progress",
+      "known_unknowns": [
+        "Entry size and complete boundary are provisional; 256 is not confirmed"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "State combines in_progress, done, and report"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 bool",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/quests.py",
+          "symbol": "QuestEditor.in_progress"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Quest in progress",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 367954,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 3,
+        "relative_start": 2,
+        "stride": 26
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "quests.report",
+      "known_unknowns": [
+        "Entry size and complete boundary are provisional; 256 is not confirmed"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "State combines in_progress, done, and report"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 bool",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/quests.py",
+          "symbol": "QuestEditor.report"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Quest report",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 367954,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 4,
+        "relative_start": 3,
+        "stride": 26
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "quests.seen",
+      "known_unknowns": [
+        "Entry size and complete boundary are provisional; 256 is not confirmed"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "State combines in_progress, done, and report"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 bool",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/quests.py",
+          "symbol": "QuestEditor.seen"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Quest seen",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "base": 367954,
+        "count": 256,
+        "kind": "strided",
+        "relative_end": 5,
+        "relative_start": 4,
+        "stride": 26
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "quests.updated",
+      "known_unknowns": [
+        "Entry size and complete boundary are provisional; 256 is not confirmed"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "State combines in_progress, done, and report"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8 bool",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/quests.py",
+          "symbol": "QuestEditor.updated"
+        }
+      ],
+      "read_state": "unknown",
+      "semantic_name": "Quest updated",
+      "sensitive": false,
+      "write_state": "unknown"
+    },
+    {
+      "address": {
+        "kind": "none"
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "save.file_length",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "449680 observed",
+      "platform_build_evidence": [],
+      "primitive": "usize",
+      "python_sources": [
+        {
+          "access": "read",
+          "path": "src/kadishutu/core/shared/file_handling.py",
+          "symbol": "RawSave.open"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Input byte length",
+      "sensitive": false,
+      "write_state": "rejected"
+    },
+    {
+      "address": {
+        "end": 68,
+        "kind": "absolute",
+        "start": 64
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "save.gvas_valid",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "GVAS",
+      "platform_build_evidence": [],
+      "primitive": "fixed bytes",
+      "python_sources": [
+        {
+          "access": "read",
+          "path": "src/kadishutu/core/shared/file_handling.py",
+          "symbol": "is_save_decrypted"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "GVAS marker result",
+      "sensitive": false,
+      "write_state": "rejected"
+    },
+    {
+      "address": {
+        "end": 68,
+        "kind": "absolute",
+        "start": 64
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "save.input_kind",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": "GVAS or unrecognized",
+      "platform_build_evidence": [],
+      "primitive": "fixed bytes",
+      "python_sources": [
+        {
+          "access": "read",
+          "path": "src/kadishutu/core/shared/file_handling.py",
+          "symbol": "is_save_decrypted"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Input kind",
+      "sensitive": false,
+      "write_state": "rejected"
+    },
+    {
+      "address": {
+        "kind": "none"
+      },
+      "approved_test_ids": [
+        "test-synthetic-profile"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "save.profile",
+      "known_unknowns": [
+        "No four-case profile evidence"
+      ],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "profile enum",
+      "python_sources": [
+        {
+          "access": "claim",
+          "path": "src/kadishutu/core/game_save/game.py",
+          "symbol": "GameSaveEditor"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "Exact format profile",
+      "sensitive": false,
+      "write_state": "rejected"
+    },
+    {
+      "address": {
+        "end": 20,
+        "kind": "absolute",
+        "start": 0
+      },
+      "approved_test_ids": [
+        "test-sha1-coverage"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "save.sha1_stored",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "SHA-1 covers 0x40..EOF"
+      ],
+      "observed_range": "20 bytes",
+      "platform_build_evidence": [],
+      "primitive": "20 bytes",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/shared/file_handling.py",
+          "symbol": "DecryptedSave.hash_validate"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Stored SHA-1",
+      "sensitive": false,
+      "write_state": "rejected"
+    },
+    {
+      "address": {
+        "kind": "none"
+      },
+      "approved_test_ids": [
+        "test-sha1-coverage"
+      ],
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "experiment_ids": [
+        "exp-pc-candidate-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "save.sha1_valid",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "SHA-1 covers 0x40..EOF"
+      ],
+      "observed_range": "true or false",
+      "platform_build_evidence": [],
+      "primitive": "boolean",
+      "python_sources": [
+        {
+          "access": "read",
+          "path": "src/kadishutu/core/shared/file_handling.py",
+          "symbol": "DecryptedSave.hash_calculate"
+        }
+      ],
+      "read_state": "confirmed-read",
+      "semantic_name": "SHA-1 result",
+      "sensitive": false,
+      "write_state": "rejected"
+    },
+    {
+      "address": {
+        "end": 15662,
+        "kind": "absolute",
+        "start": 15632
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "team.demon_order",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Erase removes matching demon indices"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "30 u8 indices",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/team.py",
+          "symbol": "TeamEditor.demon_order"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Demon order",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 15686,
+        "kind": "absolute",
+        "start": 15685
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "team.player_placement",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Linked to summoned slot order"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "u8",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/team.py",
+          "symbol": "TeamEditor.player_placement"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Player placement",
+      "sensitive": false,
+      "write_state": "candidate"
+    },
+    {
+      "address": {
+        "end": 15665,
+        "kind": "absolute",
+        "start": 15662
+      },
+      "approved_test_ids": [],
+      "corpus_evidence": [],
+      "experiment_ids": [],
+      "format_profile": null,
+      "id": "team.summoned_slots",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-15",
+      "links_invariants": [
+        "Must agree with demon summoned flags"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "three u8 indices",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/team.py",
+          "symbol": "TeamEditor.summoned_demons"
+        }
+      ],
+      "read_state": "candidate",
+      "semantic_name": "Summoned slots",
+      "sensitive": false,
+      "write_state": "candidate"
+    }
+  ],
+  "inventory_scope": [
+    {
+      "byte_access_symbols": [],
+      "classification": "no-byte-access",
+      "path": "src/kadishutu/core/game_save/__init__.py"
+    },
+    {
+      "byte_access_symbols": [
+        "ElementalAffinityEditor",
+        "AilmentAffinityEditor",
+        "AffinityManager"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/affinities.py"
+    },
+    {
+      "byte_access_symbols": [
+        "AlignmentEditor",
+        "AlignmentManager.clear"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/alignment.py"
+    },
+    {
+      "byte_access_symbols": [
+        "RegisteredDemonEditor",
+        "CompendiumManager"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/compendium.py"
+    },
+    {
+      "byte_access_symbols": [],
+      "classification": "no-byte-access",
+      "path": "src/kadishutu/core/game_save/demonlike.py"
+    },
+    {
+      "byte_access_symbols": [
+        "DemonEditor",
+        "DemonEditor.erase",
+        "DemonManager"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/demons.py"
+    },
+    {
+      "byte_access_symbols": [
+        "DlcEditor"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/dlc.py"
+    },
+    {
+      "byte_access_symbols": [
+        "EssenceEditor",
+        "EssenceManager"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/essences.py"
+    },
+    {
+      "byte_access_symbols": [
+        "GameSaveEditor",
+        "GameSaveEditor.erase_demon"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/game.py"
+    },
+    {
+      "byte_access_symbols": [
+        "ItemEditor",
+        "ItemManager"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/items.py"
+    },
+    {
+      "byte_access_symbols": [
+        "MiracleUnlockEditor",
+        "ExtraMiracleUnlock"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/miracle_unlocks.py"
+    },
+    {
+      "byte_access_symbols": [
+        "MiracleEditor",
+        "MiracleManager"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/miracles.py"
+    },
+    {
+      "byte_access_symbols": [
+        "NameEdit",
+        "PlayerEditor"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/player.py"
+    },
+    {
+      "byte_access_symbols": [
+        "PositionEditor"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/position.py"
+    },
+    {
+      "byte_access_symbols": [
+        "PotentialEditor"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/potentials.py"
+    },
+    {
+      "byte_access_symbols": [
+        "QuestEditor",
+        "QuestManager"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/quests.py"
+    },
+    {
+      "byte_access_symbols": [
+        "SkillEditor",
+        "SkillManager"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/skills.py"
+    },
+    {
+      "byte_access_symbols": [
+        "StatsEditor",
+        "StatBlockEditor",
+        "HealableEditor"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/stats.py"
+    },
+    {
+      "byte_access_symbols": [
+        "DemonOrderEditor",
+        "TeamEditor"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/game_save/team.py"
+    },
+    {
+      "byte_access_symbols": [
+        "AbstractEditor._fill",
+        "BaseStructEditor",
+        "EditorGetter"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/shared/editors.py"
+    },
+    {
+      "byte_access_symbols": [
+        "decrypt",
+        "encrypt"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/shared/encryption.py"
+    },
+    {
+      "byte_access_symbols": [
+        "is_save_decrypted",
+        "DecryptedSave.hash_calculate",
+        "DecryptedSave.hash_update"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/shared/file_handling.py"
+    },
+    {
+      "byte_access_symbols": [
+        "FCustomVersion.from_bytearray",
+        "extract_fstring"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/shared/unreal.py"
+    },
+    {
+      "byte_access_symbols": [
+        "FStringEditor",
+        "FEngineVersionEditor",
+        "CustomVersionsEditor",
+        "UnrealInternalEditor"
+      ],
+      "classification": "inventoried",
+      "path": "src/kadishutu/core/shared/unreal_editors.py"
+    }
+  ],
+  "profiles": [
+    {
+      "corpus_evidence": [
+        "pc-internet-01a",
+        "pc-owner-01a",
+        "pc-owner-01b"
+      ],
+      "header_end": 1232,
+      "id": "smtvv-pc-gamesave-449680",
+      "known_unknowns": [
+        "The supporting PC cases have unknown game build and DLC metadata.",
+        "Switch compatibility is unsupported until two independent Switch source groups pass the same gate."
+      ],
+      "length": 449680,
+      "platform_evidence": [
+        "pc"
+      ],
+      "signature": {
+        "header_range": {
+          "end": 1232,
+          "sha1": "75bdaace7d8e1bda148a79e831ab2cb81283d8a4",
+          "start": 64
+        },
+        "observed_candidate": {
+          "custom_version_count": 55,
+          "custom_version_format": 3,
+          "engine_version": "4.27.2-0++UE4+Release-4.27",
+          "gvas_offset": 64,
+          "package_file_version": 522,
+          "save_game_class_name": "SaveObject",
+          "save_game_version": 2
+        }
+      },
+      "state": "confirmed-read"
+    }
+  ],
+  "schema_version": 1,
+  "tests": [
+    {
+      "id": "test-fstring-bounds",
+      "result": "Bounded FString contract."
+    },
+    {
+      "id": "test-sha1-coverage",
+      "result": "Exact SHA-1 storage and coverage contract."
+    },
+    {
+      "id": "test-synthetic-profile",
+      "result": "Synthetic UE header and detection contract."
+    }
+  ]
+}

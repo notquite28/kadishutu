@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kadishutu.example/schemas/save-layout-v1.schema.json",
+  "title": "Kadishutu save layout evidence inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "profiles", "corpus_ids", "experiments", "tests", "inventory_scope", "fields", "defects", "data_tables"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "profiles": {"type": "array", "items": {"$ref": "#/$defs/profile"}},
+    "corpus_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "experiments": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
+    "tests": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
+    "inventory_scope": {"type": "array", "items": {"$ref": "#/$defs/scope"}},
+    "fields": {"type": "array", "items": {"$ref": "#/$defs/field"}},
+    "defects": {"type": "array", "items": {"$ref": "#/$defs/defect"}},
+    "data_tables": {"type": "array", "items": {"$ref": "#/$defs/table"}}
+  },
+  "$defs": {
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "result"],
+      "properties": {"id": {"type": "string"}, "result": {"type": "string"}}
+    },
+    "profile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "state", "length", "header_end", "platform_evidence", "corpus_evidence", "signature", "known_unknowns"],
+      "properties": {
+        "id": {"type": ["string", "null"]}, "state": {"enum": ["confirmed-read", "candidate", "blocked"]},
+        "length": {"type": "integer", "minimum": 1}, "header_end": {"type": "integer", "minimum": 1},
+        "platform_evidence": {"type": "array", "items": {"enum": ["pc", "switch"]}},
+        "corpus_evidence": {"type": "array", "items": {"type": "string"}},
+        "signature": {"type": "object"}, "known_unknowns": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "scope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "classification", "byte_access_symbols"],
+      "properties": {
+        "path": {"type": "string"}, "classification": {"enum": ["inventoried", "no-byte-access"]},
+        "byte_access_symbols": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "source": {
+      "type": "object", "additionalProperties": false, "required": ["path", "symbol", "access"],
+      "properties": {"path": {"type": "string"}, "symbol": {"type": "string"}, "access": {"enum": ["read", "write", "read-write", "claim"]}}
+    },
+    "address": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["kind"], "properties": {"kind": {"const": "none"}}},
+        {"type": "object", "additionalProperties": false, "required": ["kind", "start", "end"], "properties": {"kind": {"const": "absolute"}, "start": {"type": "integer", "minimum": 0}, "end": {"type": "integer", "minimum": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["kind", "base", "stride", "count", "relative_start", "relative_end"], "properties": {"kind": {"const": "strided"}, "base": {"type": "integer", "minimum": 0}, "stride": {"type": "integer", "minimum": 1}, "count": {"type": "integer", "minimum": 1}, "relative_start": {"type": "integer", "minimum": 0}, "relative_end": {"type": "integer", "minimum": 1}}}
+      ]
+    },
+    "field": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "semantic_name", "format_profile", "address", "primitive", "python_sources", "read_state", "write_state", "observed_range", "links_invariants", "corpus_evidence", "platform_build_evidence", "experiment_ids", "approved_test_ids", "known_unknowns", "last_review_date", "sensitive"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"},
+        "semantic_name": {"type": "string"}, "format_profile": {"type": ["string", "null"]},
+        "address": {"$ref": "#/$defs/address"}, "primitive": {"type": "string"},
+        "python_sources": {"type": "array", "items": {"$ref": "#/$defs/source"}},
+        "read_state": {"enum": ["confirmed-read", "candidate", "experimental", "unknown", "rejected"]},
+        "write_state": {"enum": ["confirmed-write", "candidate", "experimental", "unknown", "rejected"]},
+        "observed_range": {"type": ["string", "null"]}, "links_invariants": {"type": "array", "items": {"type": "string"}},
+        "corpus_evidence": {"type": "array", "items": {"type": "string"}}, "platform_build_evidence": {"type": "array", "items": {"type": "string"}},
+        "experiment_ids": {"type": "array", "items": {"type": "string"}}, "approved_test_ids": {"type": "array", "items": {"type": "string"}},
+        "known_unknowns": {"type": "array", "items": {"type": "string"}}, "last_review_date": {"type": "string", "format": "date"},
+        "sensitive": {"type": "boolean"}
+      }
+    },
+    "defect": {
+      "type": "object", "additionalProperties": false, "required": ["id", "path", "symbol", "description", "stage"],
+      "properties": {"id": {"type": "string"}, "path": {"type": "string"}, "symbol": {"type": "string"}, "description": {"type": "string"}, "stage": {"type": "string"}}
+    },
+    "table": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "upstream", "local_transformations", "platform_build"],
+      "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "upstream": {"type": "string"}, "local_transformations": {"type": "string"}, "platform_build": {"type": ["string", "null"]}}
+    }
+  }
+}
