@@ -139,6 +139,23 @@ pub struct MutationData {
     pub output_written: bool,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct MutationBatchData {
+    pub input_path: String,
+    pub output_path: String,
+    pub profile: String,
+    pub requests: Vec<MutationRequest>,
+    pub input_kind: InputKind,
+    pub output_kind: InputKind,
+    pub owned_ranges: Vec<OwnedRange>,
+    pub changed_ranges: Vec<ChangedRange>,
+    pub sha1_changed: bool,
+    pub pre_validation: MutationValidation,
+    pub post_validation: MutationValidation,
+    pub dry_run: bool,
+    pub output_written: bool,
+}
+
 pub fn validate_text(data: &ValidateData, ok: bool) -> String {
     let platforms = if data.platform_evidence.is_empty() {
         "none".to_owned()
@@ -196,6 +213,38 @@ pub fn mutation_text(data: &MutationData) -> String {
     )
 }
 
+pub fn mutation_batch_text(data: &MutationBatchData) -> String {
+    let requests = data
+        .requests
+        .iter()
+        .map(|request| format!("{}={}", request.field, request.value))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let owned = render_ranges(&data.owned_ranges);
+    let changed = data
+        .changed_ranges
+        .iter()
+        .map(|range| format!("{:#x}..{:#x}", range.start, range.end))
+        .collect::<Vec<_>>()
+        .join(", ");
+    format!(
+        "Operation: set-many\nInput: {}\nOutput: {}\nProfile: {}\nRequests: {}\nInput kind: {}\nOutput kind: {}\nOwned ranges: {}\nChanged ranges: {}\nSHA-1 changed: {}\nPre-validation: {}\nPost-validation: {}\nDry run: {}\nOutput written: {}\n",
+        data.input_path,
+        data.output_path,
+        data.profile,
+        requests,
+        data.input_kind,
+        data.output_kind,
+        owned,
+        if changed.is_empty() { "none" } else { &changed },
+        data.sha1_changed,
+        validation_result(&data.pre_validation),
+        validation_result(&data.post_validation),
+        data.dry_run,
+        data.output_written,
+    )
+}
+
 fn render_ranges(ranges: &[OwnedRange]) -> String {
     let rendered = ranges
         .iter()
@@ -228,6 +277,16 @@ pub fn fields_text(fields: &[FieldEntry]) -> String {
             Some(FieldValue::Boolean(value)) => value.to_string(),
             Some(FieldValue::Integer(value)) => value.to_string(),
             Some(FieldValue::Text(value)) => value.clone(),
+            Some(FieldValue::Essence(value)) => format!(
+                "amount={} metadata={:#04x} fusion_available={} main_menu_present={} new={} owned_flag={} consistent={}",
+                value.amount,
+                value.metadata,
+                value.fusion_available,
+                value.main_menu_present,
+                value.new,
+                value.owned_flag,
+                value.consistent
+            ),
             None => format!("unavailable ({})", field.evidence_state),
         };
         output.push_str(&field.id);

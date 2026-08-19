@@ -113,10 +113,10 @@
       "symbol": "cmd_edit"
     },
     {
-      "description": "The +0x380 descriptor aliases later item bytes.",
-      "id": "python-essence-metadata-alias",
+      "description": "The global +0x380 metadata descriptor is proven only for the tested Aogami slots.",
+      "id": "python-essence-metadata-global-offset",
       "path": "src/kadishutu/core/game_save/essences.py",
-      "stage": "Blocked mutation test",
+      "stage": "Partial linked-mutation evidence",
       "symbol": "EssenceEditor.metadata"
     },
     {
@@ -166,6 +166,26 @@
     {
       "id": "exp-pc-candidate-01",
       "result": "Three private PC cases from two independent source groups have length 449680, identical exact UE headers, valid GVAS markers, and stored SHA-1 values that independently match SHA-1 over 0x40..EOF. Their encrypted members are distinct AES-block sequences without plaintext GVAS. Build and DLC metadata remain unknown."
+    },
+    {
+      "id": "exp-pc-essence-aogami-type-c-01",
+      "result": "Selecting the legacy ownership checkbox for Aogami Type-C on a private PC save changed only item ID 558 at offset 0x4EA0 from 0 to 1. A later in-game test showed that this single-byte edit did not make Type-C present. It records the checkbox behavior, not a complete semantic addition. Both encrypted sources pass complete validation. Game build and DLC metadata remain unknown."
+    },
+    {
+      "id": "exp-pc-essence-aogami-type-c-game-01",
+      "result": "An in-game test of the ownership-only Rust edit left Aogami Type-C absent and showed only Aogami Type-6 present. In the tested source, Type-6 metadata at 0x5217 is 0x06. Metadata for the absent Type-1 through Type-5, Type-7, and Type-A through Type-C entries is 0x16. The legacy flags define 0x10 as Absent, 0x04 as Owned, and 0x02 as New. This disproves ownership-byte-only semantic mutation."
+    },
+    {
+      "id": "exp-pc-essence-aogami-type-c-linked-game-02",
+      "result": "An in-game test of the corrected linked Rust edit showed Aogami Type-C present in both Essence Fusion and the main-menu Essence list, and the essence was usable. The same save showed Aogami entries with item amount 1 in Essence Fusion while the main-menu list marked entries with metadata 0x16 as Absent. Type-6 and corrected Type-C had metadata 0x06 and appeared present in the main-menu list. This confirms that the item byte and metadata flags control distinct linked surfaces."
+    },
+    {
+      "id": "exp-pc-essence-nozuchi-purchase-01",
+      "result": "A valid in-game resave after purchasing Nozuchi's Essence changed item ID 570 at 0x4EAC from 0 to 1 and its +0x380 metadata byte at 0x522C from 0x16 to 0x06. The same resave preserved the Rust-edited Aogami Type-C bytes exactly at ownership 0x4EA0=1 and metadata 0x5220=0x06. This independently confirms the linked address rule and flag transition for a non-Aogami essence."
+    },
+    {
+      "id": "exp-pc-essence-removal-01",
+      "result": "A private PC save with Aogami Type-1 through Type-7 and Type-A through Type-C ownership checkboxes cleared was compared with the validated baseline for profile smtvv-pc-gamesave-449680. Item IDs 544 through 550 and 556 through 557 changed from 1 to 0 at offsets 0x4E92 through 0x4E98 and 0x4E9E through 0x4E9F. Item ID 558 for Type-C was 0 in both files. Metadata did not change, and a later game test showed that Type-6 remained present. Both encrypted sources pass complete validation. Game build and DLC metadata remain unknown."
     }
   ],
   "fields": [
@@ -1055,6 +1075,573 @@
     },
     {
       "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20115,
+            "start": 20114
+          },
+          {
+            "end": 21011,
+            "start": 21010
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_1.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-1 Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20116,
+            "start": 20115
+          },
+          {
+            "end": 21012,
+            "start": 21011
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_2.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-2 Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20117,
+            "start": 20116
+          },
+          {
+            "end": 21013,
+            "start": 21012
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_3.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-3 Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20118,
+            "start": 20117
+          },
+          {
+            "end": 21014,
+            "start": 21013
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_4.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-4 Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20119,
+            "start": 20118
+          },
+          {
+            "end": 21015,
+            "start": 21014
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_5.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-5 Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20120,
+            "start": 20119
+          },
+          {
+            "end": 21016,
+            "start": 21015
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_6.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-6 Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20121,
+            "start": 20120
+          },
+          {
+            "end": 21017,
+            "start": 21016
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_7.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-7 Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20127,
+            "start": 20126
+          },
+          {
+            "end": 21023,
+            "start": 21022
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_a.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-A Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20128,
+            "start": 20127
+          },
+          {
+            "end": 21024,
+            "start": 21023
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_b.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-B Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20129,
+            "start": 20128
+          },
+          {
+            "end": 21025,
+            "start": 21024
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-01",
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-nozuchi-purchase-01",
+        "exp-pc-essence-removal-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.aogami_type_c.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "write",
+          "path": "src/kadishutu/gui/game_save/essences.py",
+          "symbol": "EssenceEditorScreen.on_apply_changes"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Aogami Type-C Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
         "base": 20687,
         "count": 395,
         "kind": "strided",
@@ -1064,15 +1651,21 @@
       },
       "approved_test_ids": [],
       "corpus_evidence": [],
-      "experiment_ids": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-linked-game-02",
+        "exp-pc-essence-nozuchi-purchase-01"
+      ],
       "format_profile": null,
       "id": "essences.metadata",
       "known_unknowns": [
-        "Likely descriptor alias defect"
+        "Controlled evidence covers the tested Aogami slots and Nozuchi only"
       ],
-      "last_review_date": "2026-08-15",
+      "last_review_date": "2026-08-18",
       "links_invariants": [
-        "Global +0x380 offset aliases later item bytes"
+        "The global +0x380 offset matches presence flags for the tested Aogami slots",
+        "The Absent bit controls presence in the main-menu Essence list",
+        "Unknown flag bits must be preserved"
       ],
       "observed_range": null,
       "platform_build_evidence": [],
@@ -1085,9 +1678,63 @@
         }
       ],
       "read_state": "candidate",
-      "semantic_name": "Essence metadata alias",
+      "semantic_name": "Essence state metadata",
       "sensitive": false,
       "write_state": "candidate"
+    },
+    {
+      "address": {
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 20141,
+            "start": 20140
+          },
+          {
+            "end": 21037,
+            "start": 21036
+          }
+        ]
+      },
+      "approved_test_ids": [
+        "test-linked-essence-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-essence-nozuchi-purchase-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "essences.nozuchi.owned",
+      "known_unknowns": [
+        "Game build and DLC metadata for the controlled saves are unknown"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The item byte controls availability in Essence Fusion",
+        "The metadata Absent bit controls presence in the main-menu Essence list",
+        "Ownership writes the item byte and preserves unknown metadata bits",
+        "Owned state sets New and Owned and clears Absent",
+        "Absent state sets New, Owned, and Absent"
+      ],
+      "observed_range": null,
+      "platform_build_evidence": [],
+      "primitive": "linked u8 bool and u8 flags",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.owned"
+        },
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/essences.py",
+          "symbol": "EssenceEditor.metadata"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Nozuchi's Essence ownership",
+      "sensitive": false,
+      "write_state": "confirmed-write"
     },
     {
       "address": {
@@ -1100,13 +1747,20 @@
       },
       "approved_test_ids": [],
       "corpus_evidence": [],
-      "experiment_ids": [],
+      "experiment_ids": [
+        "exp-pc-essence-aogami-type-c-01",
+        "exp-pc-essence-nozuchi-purchase-01",
+        "exp-pc-essence-removal-01"
+      ],
       "format_profile": null,
       "id": "essences.owned",
-      "known_unknowns": [],
-      "last_review_date": "2026-08-15",
+      "known_unknowns": [
+        "Controlled evidence covers Aogami Type-1 through Type-7, Type-A through Type-C, and Nozuchi, but not the remaining essence slots",
+        "Only 0-to-1 and 1-to-0 ownership transitions have controlled evidence"
+      ],
+      "last_review_date": "2026-08-18",
       "links_invariants": [
-        "Aliases item amount"
+        "The item byte controls availability in Essence Fusion"
       ],
       "observed_range": null,
       "platform_build_evidence": [],
@@ -3227,6 +3881,10 @@
   ],
   "schema_version": 1,
   "tests": [
+    {
+      "id": "test-linked-essence-mutation",
+      "result": "Exact linked ownership and metadata ranges for every released essence, unknown-bit preservation, SHA-1, idempotence, encrypted-envelope, dry-run, and output-preservation contract."
+    },
     {
       "id": "test-fstring-bounds",
       "result": "Bounded FString contract."

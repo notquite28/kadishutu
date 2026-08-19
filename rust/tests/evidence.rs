@@ -5,7 +5,7 @@ use kadishutu::{
     format::{
         bytes::ByteView,
         detect::{CheckStatus, InputKind, validate_bytes},
-        game_save::evidence_catalog,
+        game_save::{FieldValue, SaveDocument, evidence_catalog},
         unreal,
     },
     integrity,
@@ -154,6 +154,51 @@ fn embedded_catalog_and_reader_map_are_consistent() {
         .map(|field| field.id.as_str())
         .collect::<Vec<_>>();
     assert!(ids.windows(2).all(|pair| pair[0] < pair[1]));
+}
+
+#[test]
+fn released_essence_reader_reports_present_absent_split_and_unknown_bits() {
+    let mut bytes = support::synthetic::valid_pc_profile();
+    let owned = 0x4ea0;
+    let metadata = 0x5220;
+
+    for (amount, flags, expected_present, expected_consistent) in [
+        (1, 0x06, true, true),
+        (0, 0x16, false, true),
+        (1, 0x16, false, false),
+        (0, 0x86, true, false),
+    ] {
+        bytes[owned] = amount;
+        bytes[metadata] = flags;
+        support::synthetic::update_hash(&mut bytes);
+        let document = SaveDocument::open(bytes.clone()).unwrap();
+        let FieldValue::Essence(state) = document.read("essences.aogami_type_c.owned").unwrap()
+        else {
+            panic!("essence field returned the wrong value type");
+        };
+        assert_eq!(state.amount, amount);
+        assert_eq!(state.metadata, flags);
+        assert_eq!(state.fusion_available, amount != 0);
+        assert_eq!(state.main_menu_present, expected_present);
+        assert_eq!(state.consistent, expected_consistent);
+        assert_eq!(state.owned_flag, flags & 0x04 != 0);
+        assert_eq!(state.new, flags & 0x02 != 0);
+    }
+}
+
+#[test]
+fn released_essence_reader_accepts_valid_encrypted_save() {
+    let mut plaintext = support::synthetic::valid_pc_profile();
+    plaintext[0x4eac] = 1;
+    plaintext[0x522c] = 0x06;
+    support::synthetic::update_hash(&mut plaintext);
+    let document = SaveDocument::open(crypto::encrypt(&plaintext).unwrap()).unwrap();
+    let FieldValue::Essence(state) = document.read("essences.nozuchi.owned").unwrap() else {
+        panic!("essence field returned the wrong value type");
+    };
+    assert!(state.consistent);
+    assert!(state.fusion_available);
+    assert!(state.main_menu_present);
 }
 
 proptest! {

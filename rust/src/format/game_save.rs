@@ -2,8 +2,11 @@ use std::{collections::BTreeMap, sync::LazyLock};
 
 use serde::{Deserialize, Serialize};
 
+use crate::{crypto, essence};
+
 use super::{
     FormatError,
+    bytes::ByteView,
     detect::{self, CheckStatus, FormatProfile, InputKind, ValidationReport},
 };
 
@@ -21,6 +24,11 @@ const READER_IDS: &[&str] = &[
     "save.profile",
     "save.sha1_valid",
 ];
+
+fn reader_exists(id: &str) -> bool {
+    READER_IDS.contains(&id)
+        || essence::by_field(id).is_some_and(|definition| definition.released())
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -86,6 +94,18 @@ pub enum FieldValue {
     Boolean(bool),
     Integer(u64),
     Text(String),
+    Essence(EssenceState),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct EssenceState {
+    pub amount: u8,
+    pub metadata: u8,
+    pub fusion_available: bool,
+    pub main_menu_present: bool,
+    pub new: bool,
+    pub owned_flag: bool,
+    pub consistent: bool,
 }
 
 #[derive(Debug)]
@@ -121,7 +141,7 @@ impl EvidenceCatalog {
             }
         }
         for descriptor in &document.fields {
-            if descriptor.readable() && !READER_IDS.contains(&descriptor.id.as_str()) {
+            if descriptor.readable() && !reader_exists(&descriptor.id) {
                 return Err(format!(
                     "confirmed field has no hard-coded reader: {}",
                     descriptor.id
@@ -158,6 +178,17 @@ pub struct SaveDocument {
 
 impl SaveDocument {
     pub fn open(bytes: Vec<u8>) -> Result<Self, FormatError> {
+        let source_validation = detect::validate_bytes(&bytes);
+        if !source_validation.is_valid() {
+            return Err(FormatError::UnsupportedProfile);
+        }
+        let bytes = match source_validation.input_kind {
+            InputKind::Decrypted => bytes,
+            InputKind::Encrypted => {
+                crypto::decrypt(&bytes).map_err(|_| FormatError::UnsupportedProfile)?
+            }
+            InputKind::Unrecognized => return Err(FormatError::UnsupportedProfile),
+        };
         let validation = detect::validate_bytes(&bytes);
         if !validation.is_valid() || validation.input_kind != InputKind::Decrypted {
             return Err(FormatError::UnsupportedProfile);
@@ -174,10 +205,26 @@ impl SaveDocument {
         let descriptor = evidence_catalog()?
             .get(id)
             .ok_or_else(|| FormatError::Structure(format!("unknown field id: {id}")))?;
-        if !descriptor.readable() || !READER_IDS.contains(&id) {
+        if !descriptor.readable() || !reader_exists(id) {
             return Err(FormatError::Structure(format!(
                 "field is not readable: {id}"
             )));
+        }
+        if let Some(definition) = essence::by_field(id).filter(|definition| definition.released()) {
+            let view = ByteView::new(&self.bytes);
+            let amount = view.u8(definition.owned_offset())?;
+            let metadata = view.u8(definition.metadata_offset())?;
+            let fusion_available = amount != 0;
+            let main_menu_present = metadata & 0x10 == 0;
+            return Ok(FieldValue::Essence(EssenceState {
+                amount,
+                metadata,
+                fusion_available,
+                main_menu_present,
+                new: metadata & 0x02 != 0,
+                owned_flag: metadata & 0x04 != 0,
+                consistent: fusion_available == main_menu_present,
+            }));
         }
         let header = self.validation.header.as_ref();
         match id {

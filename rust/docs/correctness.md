@@ -247,6 +247,19 @@ Procedure:
 
 A game launch alone is not enough. The tester must observe the edited value and related state.
 
+Use the local evidence tool to compare two valid decrypted saves. The tool ignores the
+SHA-1 field and reports only changed half-open ranges. It does not print save bytes.
+
+```sh
+python tools/evidence.py compare \
+  --before /private/source.decrypted.sav \
+  --after /private/changed.decrypted.sav \
+  --format json
+```
+
+Change one game value between the two saves. Keep both saves private. A range report
+can locate a candidate field, but it does not make that field safe to write.
+
 ## 7. Specific risk gates
 
 ### 7.1 Cryptography and integrity
@@ -292,7 +305,21 @@ The current documentation states that demon stats can reset and that level edits
 
 ### 7.5 Items and essences
 
-An essence has an amount and metadata flags. A write must preserve unknown flag bits and maintain proven coupling. Item limits require per-item metadata and game-build provenance. Until then, stable mutation is disabled.
+An essence has an amount and metadata flags. A write must preserve unknown flag bits and maintain proven coupling. The released Aogami and Nozuchi operations own both proven bytes and follow the legacy `give` and `take` flag transitions. Every candidate essence remains disabled until its item ID, metadata address, and in-game behavior pass the same gate.
+
+Use `tools/evidence.py compare-essence` for a controlled purchase or removal:
+
+```sh
+python tools/evidence.py compare-essence \
+  --before /private/before.decrypted.sav \
+  --after /private/after.decrypted.sav \
+  --item-id 570 \
+  --format json
+```
+
+The complete identity table contains item IDs 221 through 615. Untested entries
+remain `candidate`. Before the full range becomes writable, controlled in-game
+tests must cover low, middle, and high item IDs and confirm both linked offsets.
 
 ### 7.6 Team and demon records
 

@@ -7,6 +7,8 @@ use predicates::prelude::*;
 use serde_json::Value;
 use tempfile::tempdir;
 
+use kadishutu::crypto;
+
 fn binary() -> Command {
     Command::new(assert_cmd::cargo::cargo_bin!("kadishutu"))
 }
@@ -134,6 +136,177 @@ fn unreleased_mutation_fields_are_rejected_by_set() {
     assert_eq!(report["command"], "set");
     assert_eq!(report["error"]["kind"], "cli_value");
     assert_eq!(fs::read(input).unwrap(), bytes);
+    assert!(!output.exists());
+}
+
+#[test]
+fn aogami_type_c_set_supports_dry_run_and_explicit_output() {
+    let directory = tempdir().unwrap();
+    let input = directory.path().join("input.sav");
+    let output = directory.path().join("output.sav");
+    let mut source = support::synthetic::valid_pc_profile();
+    source[0x5220] = 0x16;
+    support::synthetic::update_hash(&mut source);
+    fs::write(&input, &source).unwrap();
+    let arguments = [
+        "set",
+        input.to_str().unwrap(),
+        "essences.aogami_type_c.owned",
+        "1",
+        "--output",
+        output.to_str().unwrap(),
+        "--format",
+        "json",
+    ];
+
+    let dry_run = binary().args(arguments).arg("--dry-run").output().unwrap();
+    assert!(dry_run.status.success());
+    let dry_report: Value = serde_json::from_slice(&dry_run.stdout).unwrap();
+    assert_eq!(dry_report["ok"], true);
+    assert_eq!(dry_report["data"]["dry_run"], true);
+    assert_eq!(dry_report["data"]["output_written"], false);
+    assert!(!output.exists());
+    assert_eq!(fs::read(&input).unwrap(), source);
+
+    let applied = binary().args(arguments).output().unwrap();
+    assert!(applied.status.success());
+    let report: Value = serde_json::from_slice(&applied.stdout).unwrap();
+    assert_eq!(report["data"]["owned_ranges"][0]["start"], 0x4ea0);
+    assert_eq!(report["data"]["owned_ranges"][0]["end"], 0x4ea1);
+    assert_eq!(report["data"]["owned_ranges"][1]["start"], 0x5220);
+    assert_eq!(report["data"]["owned_ranges"][1]["end"], 0x5221);
+    assert_eq!(report["data"]["output_written"], true);
+
+    let mut expected = source.clone();
+    expected[0x4ea0] = 1;
+    expected[0x5220] = 0x06;
+    support::synthetic::update_hash(&mut expected);
+    assert_eq!(fs::read(&output).unwrap(), expected);
+    assert_eq!(fs::read(&input).unwrap(), source);
+}
+
+#[test]
+fn nozuchi_set_uses_confirmed_linked_ranges() {
+    let directory = tempdir().unwrap();
+    let input = directory.path().join("input.sav");
+    let output = directory.path().join("output.sav");
+    let mut source = support::synthetic::valid_pc_profile();
+    source[0x522c] = 0x16;
+    support::synthetic::update_hash(&mut source);
+    fs::write(&input, &source).unwrap();
+
+    let result = binary()
+        .args([
+            "set",
+            input.to_str().unwrap(),
+            "essences.nozuchi.owned",
+            "1",
+            "--output",
+            output.to_str().unwrap(),
+            "--format",
+            "json",
+        ])
+        .output()
+        .unwrap();
+
+    assert!(result.status.success());
+    let report: Value = serde_json::from_slice(&result.stdout).unwrap();
+    assert_eq!(report["data"]["owned_ranges"][0]["start"], 0x4eac);
+    assert_eq!(report["data"]["owned_ranges"][1]["start"], 0x522c);
+
+    let mut expected = source.clone();
+    expected[0x4eac] = 1;
+    expected[0x522c] = 0x06;
+    support::synthetic::update_hash(&mut expected);
+    assert_eq!(fs::read(&output).unwrap(), expected);
+    assert_eq!(fs::read(&input).unwrap(), source);
+}
+
+#[test]
+fn inspect_reports_linked_essence_consistency_from_encrypted_save() {
+    let directory = tempdir().unwrap();
+    let input = directory.path().join("input.sav");
+    let mut plaintext = support::synthetic::valid_pc_profile();
+    plaintext[0x4eac] = 1;
+    plaintext[0x522c] = 0x16;
+    support::synthetic::update_hash(&mut plaintext);
+    fs::write(&input, crypto::encrypt(&plaintext).unwrap()).unwrap();
+
+    let result = binary()
+        .args([
+            "inspect",
+            input.to_str().unwrap(),
+            "--field",
+            "essences.nozuchi.owned",
+            "--format",
+            "json",
+        ])
+        .output()
+        .unwrap();
+
+    assert!(result.status.success());
+    let report: Value = serde_json::from_slice(&result.stdout).unwrap();
+    let value = &report["data"]["fields"][0]["value"];
+    assert_eq!(value["amount"], 1);
+    assert_eq!(value["metadata"], 0x16);
+    assert_eq!(value["fusion_available"], true);
+    assert_eq!(value["main_menu_present"], false);
+    assert_eq!(value["consistent"], false);
+}
+
+#[test]
+fn set_many_supports_repeated_assignments_dry_run_and_duplicate_rejection() {
+    let directory = tempdir().unwrap();
+    let input = directory.path().join("input.sav");
+    let output = directory.path().join("output.sav");
+    let mut plaintext = support::synthetic::valid_pc_profile();
+    plaintext[0x5212] = 0x16;
+    plaintext[0x5213] = 0x16;
+    support::synthetic::update_hash(&mut plaintext);
+    let encrypted = crypto::encrypt(&plaintext).unwrap();
+    fs::write(&input, &encrypted).unwrap();
+
+    let result = binary()
+        .args([
+            "set-many",
+            input.to_str().unwrap(),
+            "--set",
+            "essences.aogami_type_1.owned=1",
+            "--set",
+            "essences.aogami_type_2.owned=1",
+            "--output",
+            output.to_str().unwrap(),
+            "--dry-run",
+            "--format",
+            "json",
+        ])
+        .output()
+        .unwrap();
+    assert!(result.status.success());
+    let report: Value = serde_json::from_slice(&result.stdout).unwrap();
+    assert_eq!(report["command"], "set-many");
+    assert_eq!(report["data"]["requests"].as_array().unwrap().len(), 2);
+    assert_eq!(report["data"]["owned_ranges"].as_array().unwrap().len(), 4);
+    assert_eq!(report["data"]["output_written"], false);
+    assert!(!output.exists());
+    assert_eq!(fs::read(&input).unwrap(), encrypted);
+
+    let duplicate = binary()
+        .args([
+            "set-many",
+            input.to_str().unwrap(),
+            "--set",
+            "essences.aogami_type_1.owned=1",
+            "--set",
+            "essences.aogami_type_1.owned=0",
+            "--output",
+            output.to_str().unwrap(),
+            "--format",
+            "json",
+        ])
+        .output()
+        .unwrap();
+    assert_eq!(duplicate.status.code(), Some(2));
     assert!(!output.exists());
 }
 

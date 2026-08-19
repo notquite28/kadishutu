@@ -7,7 +7,7 @@
   "required": ["schema_version", "command", "ok", "data", "warnings", "error"],
   "properties": {
     "schema_version": {"const": 1},
-    "command": {"enum": ["validate", "inspect", "get", "decrypt", "encrypt", "set"]},
+    "command": {"enum": ["validate", "inspect", "get", "decrypt", "encrypt", "set", "set-many"]},
     "ok": {"type": "boolean"},
     "data": {"type": ["object", "null"]},
     "warnings": {"type": "array", "items": {"$ref": "#/$defs/warning"}},
@@ -86,6 +86,42 @@
         "dry_run": {"type": "boolean"},
         "output_written": {"type": "boolean"}
       }
+    },
+    "mutation_batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_path", "output_path", "profile", "requests", "input_kind", "output_kind",
+        "owned_ranges", "changed_ranges", "sha1_changed", "pre_validation",
+        "post_validation", "dry_run", "output_written"
+      ],
+      "properties": {
+        "input_path": {"type": "string"},
+        "output_path": {"type": "string"},
+        "profile": {"const": "smtvv-pc-gamesave-449680"},
+        "requests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "value"],
+            "properties": {
+              "field": {"type": "string"},
+              "value": {"type": "string"}
+            }
+          }
+        },
+        "input_kind": {"enum": ["decrypted", "encrypted"]},
+        "output_kind": {"enum": ["decrypted", "encrypted"]},
+        "owned_ranges": {"type": "array", "items": {"$ref": "#/$defs/byte_range"}},
+        "changed_ranges": {"type": "array", "items": {"$ref": "#/$defs/byte_range"}},
+        "sha1_changed": {"type": "boolean"},
+        "pre_validation": {"$ref": "#/$defs/mutation_validation"},
+        "post_validation": {"$ref": "#/$defs/mutation_validation"},
+        "dry_run": {"type": "boolean"},
+        "output_written": {"type": "boolean"}
+      }
     }
   },
   "allOf": [
@@ -102,6 +138,14 @@
       "then": {
         "properties": {
           "data": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/mutation"}]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"command": {"const": "set-many"}}, "required": ["command"]},
+      "then": {
+        "properties": {
+          "data": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/mutation_batch"}]}
         }
       }
     }

@@ -1,6 +1,7 @@
 pub mod cli;
 pub mod crypto;
 pub mod error;
+pub mod essence;
 pub mod format;
 pub mod integrity;
 pub mod io;

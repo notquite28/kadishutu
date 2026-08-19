@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{collections::BTreeSet, ops::Range};
 
 use serde::Serialize;
 use sha1::{Digest, Sha1};
@@ -6,6 +6,7 @@ use sha1::{Digest, Sha1};
 use crate::{
     crypto,
     error::CliError,
+    essence::{self, EssenceDefinition},
     format::{
         detect::{CheckStatus, FormatProfile, InputKind, ValidationReport, validate_bytes},
         game_save::{EvidenceState, evidence_catalog},
@@ -63,7 +64,7 @@ impl From<&ValidationReport> for MutationValidation {
 #[derive(Debug)]
 pub struct MutationOutput {
     pub bytes: Vec<u8>,
-    pub request: MutationRequest,
+    pub requests: Vec<MutationRequest>,
     pub profile: FormatProfile,
     pub input_kind: InputKind,
     pub output_kind: InputKind,
@@ -83,7 +84,7 @@ struct PlannedWrite {
 
 #[derive(Debug, Clone)]
 struct MutationPlan {
-    request: MutationRequest,
+    requests: Vec<MutationRequest>,
     writes: Vec<PlannedWrite>,
     old_sha1: [u8; 20],
     expected_sha1: [u8; 20],
@@ -94,30 +95,97 @@ struct MutationSpec {
     field: &'static str,
     range: OwnedRange,
     encode: fn(&str) -> Result<Vec<u8>, CliError>,
+    linked_range: Option<OwnedRange>,
+    linked_encode: Option<fn(u8, &str) -> Result<u8, CliError>>,
+}
+
+fn essence_spec(definition: EssenceDefinition) -> MutationSpec {
+    let owned = definition.owned_offset();
+    let metadata = definition.metadata_offset();
+    MutationSpec {
+        field: definition.field,
+        range: OwnedRange {
+            start: owned,
+            end: owned + 1,
+        },
+        encode: encode_owned_bool,
+        linked_range: Some(OwnedRange {
+            start: metadata,
+            end: metadata + 1,
+        }),
+        linked_encode: Some(encode_essence_metadata),
+    }
 }
 
 pub fn execute_set(source: Vec<u8>, request: MutationRequest) -> Result<MutationOutput, CliError> {
-    let prepared = prepare_input(source)?;
-    let catalog = evidence_catalog().map_err(|error| CliError::Internal(error.to_string()))?;
-    let descriptor = catalog
-        .get(&request.field)
-        .ok_or_else(|| CliError::CliValue(format!("unknown field id: {}", request.field)))?;
-    if descriptor.write_state != EvidenceState::ConfirmedWrite {
-        return Err(CliError::CliValue(format!(
-            "field is not confirmed-write: {}",
-            request.field
-        )));
-    }
-    let spec = mutation_spec(&request.field).ok_or_else(|| {
-        CliError::Internal(format!(
-            "confirmed-write field has no mutation operation: {}",
-            request.field
-        ))
-    })?;
-    execute_prepared(prepared, request, spec, None)
+    execute_set_many(source, vec![request])
 }
-fn mutation_spec(_field: &str) -> Option<MutationSpec> {
-    None
+
+pub fn execute_set_many(
+    source: Vec<u8>,
+    requests: Vec<MutationRequest>,
+) -> Result<MutationOutput, CliError> {
+    if requests.is_empty() {
+        return Err(CliError::CliValue(
+            "set-many requires at least one assignment".to_owned(),
+        ));
+    }
+    let mut fields = BTreeSet::new();
+    let mut specs = Vec::with_capacity(requests.len());
+    for request in &requests {
+        if !fields.insert(request.field.as_str()) {
+            return Err(CliError::CliValue(format!(
+                "duplicate mutation field: {}",
+                request.field
+            )));
+        }
+        let catalog = evidence_catalog().map_err(|error| CliError::Internal(error.to_string()))?;
+        let descriptor = catalog
+            .get(&request.field)
+            .ok_or_else(|| CliError::CliValue(format!("unknown field id: {}", request.field)))?;
+        if descriptor.write_state != EvidenceState::ConfirmedWrite {
+            return Err(CliError::CliValue(format!(
+                "field is not confirmed-write: {}",
+                request.field
+            )));
+        }
+        specs.push(mutation_spec(&request.field).ok_or_else(|| {
+            CliError::Internal(format!(
+                "confirmed-write field has no mutation operation: {}",
+                request.field
+            ))
+        })?);
+    }
+    let prepared = prepare_input(source)?;
+    execute_prepared(prepared, requests, specs, None)
+}
+fn mutation_spec(field: &str) -> Option<MutationSpec> {
+    essence::by_field(field)
+        .filter(|definition| definition.released())
+        .map(essence_spec)
+}
+
+fn encode_owned_bool(value: &str) -> Result<Vec<u8>, CliError> {
+    match value {
+        "0" => Ok(vec![0]),
+        "1" => Ok(vec![1]),
+        _ => Err(CliError::CliValue(
+            "essence ownership must be 0 (absent) or 1 (owned)".to_owned(),
+        )),
+    }
+}
+
+fn encode_essence_metadata(old: u8, value: &str) -> Result<u8, CliError> {
+    const NEW: u8 = 0x02;
+    const OWNED: u8 = 0x04;
+    const ABSENT: u8 = 0x10;
+    match value {
+        "0" => Ok(old | NEW | OWNED | ABSENT),
+        "1" => Ok((old | NEW | OWNED) & !ABSENT),
+        _ => Err(CliError::CliValue(
+            "essence ownership must be 0 (absent) or 1 (owned)".to_owned(),
+        )),
+    }
 }
 
 struct PreparedInput {
@@ -166,20 +234,27 @@ fn execute_with_spec(
     injected_change: Option<(usize, u8)>,
 ) -> Result<MutationOutput, CliError> {
     let prepared = prepare_input(source)?;
-    execute_prepared(prepared, request, spec, injected_change)
+    execute_prepared(prepared, vec![request], vec![spec], injected_change)
 }
 
 fn execute_prepared(
     prepared: PreparedInput,
-    request: MutationRequest,
-    spec: MutationSpec,
+    requests: Vec<MutationRequest>,
+    specs: Vec<MutationSpec>,
     injected_change: Option<(usize, u8)>,
 ) -> Result<MutationOutput, CliError> {
-    if request.field != spec.field {
-        return Err(CliError::CliValue(format!(
-            "mutation operation does not own field: {}",
-            request.field
-        )));
+    if requests.len() != specs.len() {
+        return Err(CliError::Internal(
+            "mutation requests and operations differ in length".to_owned(),
+        ));
+    }
+    for (request, spec) in requests.iter().zip(&specs) {
+        if request.field != spec.field {
+            return Err(CliError::CliValue(format!(
+                "mutation operation does not own field: {}",
+                request.field
+            )));
+        }
     }
     let PreparedInput {
         plaintext,
@@ -187,7 +262,7 @@ fn execute_prepared(
         validation: pre_validation,
         profile,
     } = prepared;
-    let plan = build_plan(&plaintext, request, spec)?;
+    let plan = build_batch_plan(&plaintext, requests, specs)?;
     let mut working = plaintext.clone();
     apply_plan(&mut working, &plan)?;
     if let Some((offset, value)) = injected_change {
@@ -237,7 +312,7 @@ fn execute_prepared(
 
     Ok(MutationOutput {
         bytes,
-        request: plan.request,
+        requests: plan.requests,
         profile,
         input_kind,
         output_kind,
@@ -249,11 +324,51 @@ fn execute_prepared(
     })
 }
 
+#[cfg(test)]
 fn build_plan(
     plaintext: &[u8],
     request: MutationRequest,
     spec: MutationSpec,
 ) -> Result<MutationPlan, CliError> {
+    build_batch_plan(plaintext, vec![request], vec![spec])
+}
+
+fn build_batch_plan(
+    plaintext: &[u8],
+    requests: Vec<MutationRequest>,
+    specs: Vec<MutationSpec>,
+) -> Result<MutationPlan, CliError> {
+    let mut writes = Vec::with_capacity(specs.len() * 2);
+    for (request, spec) in requests.iter().zip(specs) {
+        writes.extend(build_writes(plaintext, request, spec)?);
+    }
+    writes.sort_by_key(|write| write.range.start);
+    if writes
+        .windows(2)
+        .any(|pair| pair[1].range.start < pair[0].range.end)
+    {
+        return Err(CliError::Invariant(
+            "batch mutation ranges overlap".to_owned(),
+        ));
+    }
+    let old_sha1: [u8; 20] = plaintext
+        .get(HASH_RANGE)
+        .and_then(|bytes| bytes.try_into().ok())
+        .ok_or_else(|| CliError::Invariant("SHA-1 field is outside the save".to_owned()))?;
+    let expected_sha1 = calculate_planned_sha1(plaintext, &writes)?;
+    Ok(MutationPlan {
+        requests,
+        writes,
+        old_sha1,
+        expected_sha1,
+    })
+}
+
+fn build_writes(
+    plaintext: &[u8],
+    request: &MutationRequest,
+    spec: MutationSpec,
+) -> Result<Vec<PlannedWrite>, CliError> {
     validate_owned_range(spec.range, plaintext.len())?;
     let new = (spec.encode)(&request.value)?;
     let range = spec.range.as_range();
@@ -266,25 +381,40 @@ fn build_plan(
         )));
     }
     let old = plaintext
-        .get(range.clone())
+        .get(range)
         .ok_or_else(|| CliError::Invariant("owned range is outside the save".to_owned()))?
         .to_vec();
-    let old_sha1: [u8; 20] = plaintext
-        .get(HASH_RANGE)
-        .and_then(|bytes| bytes.try_into().ok())
-        .ok_or_else(|| CliError::Invariant("SHA-1 field is outside the save".to_owned()))?;
-    let write = PlannedWrite {
+    let mut writes = vec![PlannedWrite {
         range: spec.range,
         old,
         new,
-    };
-    let expected_sha1 = calculate_planned_sha1(plaintext, std::slice::from_ref(&write))?;
-    Ok(MutationPlan {
-        request,
-        writes: vec![write],
-        old_sha1,
-        expected_sha1,
-    })
+    }];
+    match (spec.linked_range, spec.linked_encode) {
+        (Some(linked_range), Some(linked_encode)) => {
+            validate_owned_range(linked_range, plaintext.len())?;
+            if linked_range.start < spec.range.end || linked_range.end - linked_range.start != 1 {
+                return Err(CliError::Internal(
+                    "linked mutation range must be one ordered byte".to_owned(),
+                ));
+            }
+            let old = *plaintext.get(linked_range.start).ok_or_else(|| {
+                CliError::Invariant("linked owned range is outside the save".to_owned())
+            })?;
+            let new = linked_encode(old, &request.value)?;
+            writes.push(PlannedWrite {
+                range: linked_range,
+                old: vec![old],
+                new: vec![new],
+            });
+        }
+        (None, None) => {}
+        _ => {
+            return Err(CliError::Internal(
+                "linked mutation range and encoder must be declared together".to_owned(),
+            ));
+        }
+    }
+    Ok(writes)
 }
 
 fn validate_owned_range(range: OwnedRange, length: usize) -> Result<(), CliError> {
@@ -444,6 +574,8 @@ mod tests {
         field: "internal.synthetic_u32",
         range: TEST_RANGE,
         encode: encode_u32,
+        linked_range: None,
+        linked_encode: None,
     };
 
     fn encode_u32(value: &str) -> Result<Vec<u8>, CliError> {
@@ -459,6 +591,143 @@ mod tests {
             field: TEST_SPEC.field.to_owned(),
             value: value.to_string(),
         }
+    }
+
+    fn essence_request(spec: MutationSpec, value: &str) -> MutationRequest {
+        MutationRequest {
+            field: spec.field.to_owned(),
+            value: value.to_owned(),
+        }
+    }
+
+    fn absent_essence_source(spec: MutationSpec) -> Vec<u8> {
+        absent_essences_source(&[spec])
+    }
+
+    fn absent_essences_source(specs: &[MutationSpec]) -> Vec<u8> {
+        let mut source = synthetic::valid_pc_profile();
+        for spec in specs {
+            source[spec.range.start] = 0;
+            source[spec.linked_range.unwrap().start] = 0x16;
+        }
+        synthetic::update_hash(&mut source);
+        source
+    }
+
+    #[test]
+    fn linked_essence_registry_matches_legacy_give_and_take_behavior() {
+        for definition in essence::released() {
+            let spec = essence_spec(definition);
+            let source = absent_essence_source(spec);
+            let metadata_range = spec.linked_range.unwrap();
+            let owned = execute_set(source.clone(), essence_request(spec, "1"))
+                .expect("0-to-1 must succeed");
+            assert_eq!(owned.bytes[spec.range.start], 1, "{}", spec.field);
+            assert_eq!(owned.bytes[metadata_range.start], 0x06, "{}", spec.field);
+            assert_eq!(owned.owned_ranges, vec![spec.range, metadata_range]);
+            assert!(integrity::validate_sha1(&owned.bytes).unwrap());
+            for (offset, (before, after)) in source.iter().zip(&owned.bytes).enumerate() {
+                if before != after {
+                    assert!(
+                        HASH_RANGE.contains(&offset)
+                            || spec.range.contains(offset)
+                            || metadata_range.contains(offset),
+                        "{} changed unexpected byte at {offset:#x}",
+                        spec.field
+                    );
+                }
+            }
+
+            let repeated = execute_set(owned.bytes.clone(), essence_request(spec, "1"))
+                .expect("idempotent set must succeed");
+            assert_eq!(repeated.bytes, owned.bytes, "{}", spec.field);
+            assert!(repeated.changed_ranges.is_empty(), "{}", spec.field);
+            assert!(!repeated.sha1_changed, "{}", spec.field);
+
+            let absent =
+                execute_set(owned.bytes, essence_request(spec, "0")).expect("1-to-0 must succeed");
+            assert_eq!(absent.bytes, source, "{}", spec.field);
+        }
+    }
+
+    #[test]
+    fn encrypted_batch_applies_all_linked_writes_once() {
+        let specs = essence::released()
+            .take(2)
+            .map(essence_spec)
+            .collect::<Vec<_>>();
+        let plaintext = absent_essences_source(&specs);
+        let encrypted = crypto::encrypt(&plaintext).unwrap();
+        let requests = specs
+            .iter()
+            .map(|spec| essence_request(*spec, "1"))
+            .collect::<Vec<_>>();
+        let output = execute_set_many(encrypted, requests).unwrap();
+        assert_eq!(output.requests.len(), 2);
+        assert_eq!(output.input_kind, InputKind::Encrypted);
+        assert_eq!(output.output_kind, InputKind::Encrypted);
+        assert_eq!(output.owned_ranges.len(), 4);
+        let decrypted = crypto::decrypt(&output.bytes).unwrap();
+        for spec in specs {
+            assert_eq!(decrypted[spec.range.start], 1);
+            assert_eq!(decrypted[spec.linked_range.unwrap().start], 0x06);
+        }
+    }
+
+    #[test]
+    fn batch_rejects_empty_duplicate_and_overlapping_requests() {
+        let source = synthetic::valid_pc_profile();
+        let empty = execute_set_many(source.clone(), Vec::new()).unwrap_err();
+        assert_eq!(empty.exit_code(), 2);
+
+        let spec = essence_spec(essence::released().next().unwrap());
+        let duplicate = execute_set_many(
+            absent_essence_source(spec),
+            vec![essence_request(spec, "1"), essence_request(spec, "0")],
+        )
+        .unwrap_err();
+        assert_eq!(duplicate.exit_code(), 2);
+        assert!(duplicate.to_string().contains("duplicate"));
+
+        let overlap = build_batch_plan(
+            &source,
+            vec![request(1), request(2)],
+            vec![TEST_SPEC, TEST_SPEC],
+        )
+        .unwrap_err();
+        assert_eq!(overlap.exit_code(), 6);
+        assert!(overlap.to_string().contains("overlap"));
+    }
+
+    #[test]
+    fn essence_metadata_transition_preserves_unknown_bits() {
+        assert_eq!(encode_essence_metadata(0x91, "1").unwrap(), 0x87);
+        assert_eq!(encode_essence_metadata(0x81, "0").unwrap(), 0x97);
+    }
+
+    #[test]
+    fn linked_essence_registry_rejects_non_boolean_values() {
+        let spec = essence_spec(essence::released().next().unwrap());
+        for value in ["", "-1", "2", "true", "owned"] {
+            let error =
+                execute_set(absent_essence_source(spec), essence_request(spec, value)).unwrap_err();
+            assert_eq!(error.exit_code(), 2);
+            assert!(error.to_string().contains("0 (absent) or 1 (owned)"));
+        }
+    }
+
+    #[test]
+    fn linked_essence_encrypted_mutation_preserves_encryption() {
+        let spec = essence_spec(essence::released().last().unwrap());
+        let plaintext = absent_essence_source(spec);
+        let encrypted = crypto::encrypt(&plaintext).unwrap();
+        let result = execute_set(encrypted, essence_request(spec, "1")).unwrap();
+        assert_eq!(result.input_kind, InputKind::Encrypted);
+        assert_eq!(result.output_kind, InputKind::Encrypted);
+        let decrypted = crypto::decrypt(&result.bytes).unwrap();
+        assert_eq!(decrypted[spec.range.start], 1);
+        assert_eq!(decrypted[spec.linked_range.unwrap().start], 0x06);
+        assert!(validate_bytes(&result.bytes).is_valid());
     }
 
     #[test]
@@ -524,6 +793,8 @@ mod tests {
                 end: 0x44,
             },
             encode: |_| Ok(b"NOPE".to_vec()),
+            linked_range: None,
+            linked_encode: None,
         };
         let error = execute_with_spec(source.clone(), request(3), marker_spec, None).unwrap_err();
         assert_eq!(error.exit_code(), 6);

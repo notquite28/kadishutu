@@ -11,10 +11,11 @@ use crate::{
         game_save::{SaveDocument, evidence_catalog},
     },
     io::{read_input, validate_output_path, write_output},
-    mutation::{MutationRequest, execute_set},
+    mutation::{MutationRequest, execute_set, execute_set_many},
     report::{
-        ConversionData, FieldEntry, GetData, InspectData, MutationData, Report, ValidateData,
-        Warning, conversion_text, fields_text, mutation_text, validate_text,
+        ConversionData, FieldEntry, GetData, InspectData, MutationBatchData, MutationData, Report,
+        ValidateData, Warning, conversion_text, fields_text, mutation_batch_text, mutation_text,
+        validate_text,
     },
 };
 
@@ -76,6 +77,17 @@ enum Command {
         #[arg(long, value_enum, default_value_t = OutputFormat::Text)]
         format: OutputFormat,
     },
+    SetMany {
+        input: OsString,
+        #[arg(long = "set")]
+        assignments: Vec<String>,
+        #[arg(long)]
+        output: OsString,
+        #[arg(long)]
+        dry_run: bool,
+        #[arg(long, value_enum, default_value_t = OutputFormat::Text)]
+        format: OutputFormat,
+    },
 }
 
 pub fn run() -> Result<(), CliError> {
@@ -125,6 +137,13 @@ pub fn run() -> Result<(), CliError> {
             dry_run,
             format,
         } => set(&input, &field, &value, &output, dry_run, format),
+        Command::SetMany {
+            input,
+            assignments,
+            output,
+            dry_run,
+            format,
+        } => set_many(&input, &assignments, &output, dry_run, format),
     }
 }
 
@@ -402,7 +421,7 @@ fn set(
         input_path: input.to_string_lossy().into_owned(),
         output_path: output.to_string_lossy().into_owned(),
         profile: mutation.profile.to_string(),
-        request: mutation.request,
+        request: mutation.requests[0].clone(),
         input_kind: mutation.input_kind,
         output_kind: mutation.output_kind,
         owned_ranges: mutation.owned_ranges,
@@ -418,6 +437,71 @@ fn set(
         OutputFormat::Text => print!("{}", mutation_text(&data)),
     }
     Ok(())
+}
+
+fn set_many(
+    input: &OsString,
+    assignments: &[String],
+    output: &OsString,
+    dry_run: bool,
+    format: OutputFormat,
+) -> Result<(), CliError> {
+    let requests = match parse_assignments(assignments) {
+        Ok(requests) => requests,
+        Err(error) => return emit_error("set-many", format, &error),
+    };
+    let source = match read_input(input) {
+        Ok(bytes) => bytes,
+        Err(error) => return emit_error("set-many", format, &error),
+    };
+    let mutation = match execute_set_many(source, requests) {
+        Ok(mutation) => mutation,
+        Err(error) => return emit_error("set-many", format, &error),
+    };
+    let output_written = match persist_set(input, output, &mutation.bytes, dry_run) {
+        Ok(written) => written,
+        Err(error) => return emit_error("set-many", format, &error),
+    };
+    let data = MutationBatchData {
+        input_path: input.to_string_lossy().into_owned(),
+        output_path: output.to_string_lossy().into_owned(),
+        profile: mutation.profile.to_string(),
+        requests: mutation.requests,
+        input_kind: mutation.input_kind,
+        output_kind: mutation.output_kind,
+        owned_ranges: mutation.owned_ranges,
+        changed_ranges: mutation.changed_ranges,
+        sha1_changed: mutation.sha1_changed,
+        pre_validation: mutation.pre_validation,
+        post_validation: mutation.post_validation,
+        dry_run,
+        output_written,
+    };
+    match format {
+        OutputFormat::Json => emit_json(&Report::success("set-many", data, Vec::new()))?,
+        OutputFormat::Text => print!("{}", mutation_batch_text(&data)),
+    }
+    Ok(())
+}
+
+fn parse_assignments(assignments: &[String]) -> Result<Vec<MutationRequest>, CliError> {
+    assignments
+        .iter()
+        .map(|assignment| {
+            let (field, value) = assignment.split_once('=').ok_or_else(|| {
+                CliError::CliValue(format!("assignment must use FIELD=VALUE: {assignment}"))
+            })?;
+            if field.is_empty() || value.is_empty() {
+                return Err(CliError::CliValue(format!(
+                    "assignment must use non-empty FIELD=VALUE: {assignment}"
+                )));
+            }
+            Ok(MutationRequest {
+                field: field.to_owned(),
+                value: value.to_owned(),
+            })
+        })
+        .collect()
 }
 fn persist_set(
     input: &OsString,

@@ -82,7 +82,7 @@ The executable name is `kadishutu`.
 
 ### 7.1 Commands
 
-Stage 2 exposes these commands:
+The CLI exposes these commands:
 
 ```text
 kadishutu validate <FILE> [--format text|json]
@@ -91,9 +91,10 @@ kadishutu get <FILE> <FIELD> [--format text|json]
 kadishutu decrypt <INPUT> --output <OUTPUT> [--format text|json]
 kadishutu encrypt <INPUT> --output <OUTPUT> [--format text|json]
 kadishutu set <INPUT> <FIELD> <VALUE> --output <OUTPUT> [--dry-run] [--format text|json]
+kadishutu set-many <INPUT> --set <FIELD=VALUE>... --output <OUTPUT> [--dry-run] [--format text|json]
 ```
 
-`set` is the mutation transaction boundary. It accepts only a field with `confirmed-write` evidence and a registered mutation operation. No current game field meets this requirement.
+`set` and `set-many` are mutation transaction boundaries. They accept only fields with `confirmed-write` evidence and registered mutation operations. `set-many` rejects duplicate fields and applies every assignment in one mutation plan, SHA-1 update, encryption, and atomic write. Released linked essence fields are listed in section 7.4.
 
 ### 7.2 Shared behavior
 
@@ -126,6 +127,30 @@ kadishutu set <INPUT> <FIELD> <VALUE> --output <OUTPUT> [--dry-run] [--format te
 Field names form a versioned public API. They must come from a static registry. A `confirmed-read` field can enter read-only `inspect` and `get`. Only a `confirmed-write` field can enter a mutation command. Initial catalog examples include `game.macca`, `game.glory`, `game.play_time_seconds`, and `player.level`, but non-confirmed records are metadata only and are not readable.
 
 Renaming or removing a released field requires a documented breaking release. Internal Rust type or module names must not leak into field names.
+
+The released linked essence fields are:
+
+- `essences.aogami_type_1.owned` through `essences.aogami_type_7.owned`;
+- `essences.aogami_type_a.owned`;
+- `essences.aogami_type_b.owned`;
+- `essences.aogami_type_c.owned`;
+- `essences.nozuchi.owned`.
+
+Use `0` for absent and `1` for owned. Each operation updates the item byte and
+the linked metadata byte. It preserves unknown metadata bits.
+
+`inspect` and `get` report the linked state for each released essence field:
+
+- raw amount and metadata bytes;
+- Essence Fusion availability;
+- main-menu presence;
+- `New` and `Owned` metadata flags;
+- whether the two user-visible states are consistent.
+
+The static Rust identity table contains all 395 legacy essence item IDs. The 11
+listed fields are released. The other 384 entries remain `candidate` and cannot
+be read or written through the CLI until controlled evidence covers their linked
+addresses and game behavior.
 
 ### 7.5 Validation output
 

@@ -138,6 +138,110 @@ def validate_members(
         fail("unrecognized decrypted member unexpectedly contains GVAS")
 
 
+def validated_decrypted_bytes(path: Path) -> bytes:
+    try:
+        data = path.read_bytes()
+    except OSError as error:
+        fail(f"cannot read decrypted save: {error}")
+    if len(data) < 0x44:
+        fail("decrypted save is too short for integrity and GVAS checks")
+    if data[0x40:0x44] != b"GVAS":
+        fail("decrypted save has no GVAS marker at 0x40")
+    if data[:20] != hashlib.sha1(data[0x40:]).digest():
+        fail("decrypted save has an invalid SHA-1")
+    return data
+
+
+def changed_ranges(before: bytes, after: bytes) -> list[tuple[int, int]]:
+    ranges: list[tuple[int, int]] = []
+    start: int | None = None
+    for offset in range(20, len(before)):
+        if before[offset] != after[offset]:
+            if start is None:
+                start = offset
+        elif start is not None:
+            ranges.append((start, offset))
+            start = None
+    if start is not None:
+        ranges.append((start, len(before)))
+    return ranges
+
+
+def compare(before_path: Path, after_path: Path, output_format: str) -> None:
+    before = validated_decrypted_bytes(before_path)
+    after = validated_decrypted_bytes(after_path)
+    if len(before) != len(after):
+        fail(f"decrypted save lengths differ: {len(before)} != {len(after)}")
+    ranges = changed_ranges(before, after)
+    report = {
+        "file_length": len(before),
+        "integrity_range_ignored": {"start": 0, "end": 20},
+        "changed_byte_count": sum(end - start for start, end in ranges),
+        "changed_ranges": [
+            {"start": start, "end": end, "length": end - start}
+            for start, end in ranges
+        ],
+    }
+    if output_format == "json":
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return
+    print(f"file length: {report['file_length']}")
+    print("integrity range ignored: 0x000000..0x000014")
+    print(f"changed bytes: {report['changed_byte_count']}")
+    if not ranges:
+        print("changed ranges: none")
+        return
+    print("changed ranges:")
+    for start, end in ranges:
+        print(f"  0x{start:06x}..0x{end:06x} ({end - start} bytes)")
+
+
+def compare_essence(
+    before_path: Path,
+    after_path: Path,
+    item_id: int,
+    output_format: str,
+) -> None:
+    if not 221 <= item_id <= 615:
+        fail("essence item ID must be in the legacy range 221..615")
+    before = validated_decrypted_bytes(before_path)
+    after = validated_decrypted_bytes(after_path)
+    if len(before) != len(after):
+        fail(f"decrypted save lengths differ: {len(before)} != {len(after)}")
+    owned = 0x4C72 + item_id
+    metadata = owned + 0x380
+    ranges = changed_ranges(before, after)
+    changed_offsets = {
+        offset
+        for start, end in ranges
+        for offset in range(start, end)
+    }
+    targets = {owned, metadata}
+    report = {
+        "item_id": item_id,
+        "owned_offset": owned,
+        "metadata_offset": metadata,
+        "owned_transition": {"before": before[owned], "after": after[owned]},
+        "metadata_transition": {
+            "before": before[metadata],
+            "after": after[metadata],
+        },
+        "target_offsets_changed": sorted(changed_offsets & targets),
+        "unrelated_changed_byte_count": len(changed_offsets - targets),
+        "linked_only": changed_offsets <= targets,
+    }
+    if output_format == "json":
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return
+    print(f"item ID: {item_id}")
+    print(f"owned: 0x{owned:06x} {before[owned]:#04x} -> {after[owned]:#04x}")
+    print(
+        f"metadata: 0x{metadata:06x} "
+        f"{before[metadata]:#04x} -> {after[metadata]:#04x}"
+    )
+    print(f"unrelated changed bytes: {report['unrelated_changed_byte_count']}")
+    print(f"linked only: {report['linked_only']}")
+
 def validate_metadata(path: Path, root: Path) -> tuple[dict[str, Any], Path, Path]:
     raw = load_json(path)
     if not isinstance(raw, dict):
@@ -258,7 +362,7 @@ def verify(root: Path, manifest_path: Path) -> None:
 
 def checked_range(record: dict[str, Any]) -> None:
     address = record.get("address")
-    if not isinstance(address, dict) or address.get("kind") not in {"absolute", "strided", "none"}:
+    if not isinstance(address, dict) or address.get("kind") not in {"absolute", "strided", "linked", "none"}:
         fail(f"field {record.get('id')} has an invalid address")
     if address["kind"] == "absolute":
         start, end = address.get("start"), address.get("end")
@@ -275,6 +379,24 @@ def checked_range(record: dict[str, Any]) -> None:
         last = address["base"] + address["stride"] * (address["count"] - 1) + address["relative_end"]
         if last > (1 << 63) - 1:
             fail(f"field {record.get('id')} range arithmetic overflows")
+    elif address["kind"] == "linked":
+        ranges = address.get("ranges")
+        if not isinstance(ranges, list) or len(ranges) < 2:
+            fail(f"field {record.get('id')} has invalid linked ranges")
+        previous_end = -1
+        for item in ranges:
+            if not isinstance(item, dict) or set(item) != {"start", "end"}:
+                fail(f"field {record.get('id')} has an invalid linked range")
+            start, end = item["start"], item["end"]
+            if (
+                not isinstance(start, int)
+                or not isinstance(end, int)
+                or start < 0
+                or end <= start
+                or start < previous_end
+            ):
+                fail(f"field {record.get('id')} has unordered or invalid linked ranges")
+            previous_end = end
 
 
 def verify_layout(layout_path: Path, schema_path: Path, source_root: Path) -> None:
@@ -341,6 +463,21 @@ def parser() -> argparse.ArgumentParser:
     layout_parser.add_argument("--layout", required=True, type=Path)
     layout_parser.add_argument("--schema", required=True, type=Path)
     layout_parser.add_argument("--source-root", type=Path, default=Path(".."))
+    compare_parser = commands.add_parser(
+        "compare",
+        help="compare two valid decrypted saves without printing save bytes",
+    )
+    compare_parser.add_argument("--before", required=True, type=Path)
+    compare_parser.add_argument("--after", required=True, type=Path)
+    compare_parser.add_argument("--format", choices=("text", "json"), default="text")
+    essence_parser = commands.add_parser(
+        "compare-essence",
+        help="check the linked bytes for one controlled essence transition",
+    )
+    essence_parser.add_argument("--before", required=True, type=Path)
+    essence_parser.add_argument("--after", required=True, type=Path)
+    essence_parser.add_argument("--item-id", required=True, type=int)
+    essence_parser.add_argument("--format", choices=("text", "json"), default="text")
     return result
 
 
@@ -351,6 +488,10 @@ def main() -> int:
             build(args.root, args.output)
         elif args.command == "verify":
             verify(args.root, args.manifest)
+        elif args.command == "compare":
+            compare(args.before, args.after, args.format)
+        elif args.command == "compare-essence":
+            compare_essence(args.before, args.after, args.item_id, args.format)
         else:
             verify_layout(args.layout, args.schema, args.source_root)
     except EvidenceError as error:

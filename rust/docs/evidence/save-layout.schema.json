@@ -49,7 +49,8 @@
       "oneOf": [
         {"type": "object", "additionalProperties": false, "required": ["kind"], "properties": {"kind": {"const": "none"}}},
         {"type": "object", "additionalProperties": false, "required": ["kind", "start", "end"], "properties": {"kind": {"const": "absolute"}, "start": {"type": "integer", "minimum": 0}, "end": {"type": "integer", "minimum": 1}}},
-        {"type": "object", "additionalProperties": false, "required": ["kind", "base", "stride", "count", "relative_start", "relative_end"], "properties": {"kind": {"const": "strided"}, "base": {"type": "integer", "minimum": 0}, "stride": {"type": "integer", "minimum": 1}, "count": {"type": "integer", "minimum": 1}, "relative_start": {"type": "integer", "minimum": 0}, "relative_end": {"type": "integer", "minimum": 1}}}
+        {"type": "object", "additionalProperties": false, "required": ["kind", "base", "stride", "count", "relative_start", "relative_end"], "properties": {"kind": {"const": "strided"}, "base": {"type": "integer", "minimum": 0}, "stride": {"type": "integer", "minimum": 1}, "count": {"type": "integer", "minimum": 1}, "relative_start": {"type": "integer", "minimum": 0}, "relative_end": {"type": "integer", "minimum": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["kind", "ranges"], "properties": {"kind": {"const": "linked"}, "ranges": {"type": "array", "minItems": 2, "items": {"type": "object", "additionalProperties": false, "required": ["start", "end"], "properties": {"start": {"type": "integer", "minimum": 0}, "end": {"type": "integer", "minimum": 1}}}}}}
       ]
     },
     "field": {
