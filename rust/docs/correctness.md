@@ -305,6 +305,11 @@ maximum in the evidence record. A Rust-edited save loaded and resaved successful
 Normal game actions changed Macca `8210492 -> 8234422` and Glory `100 -> 10`.
 This confirms game-side arithmetic and persistence for both released fields.
 
+Play time has equal save-screen and runtime copies at `0x4FD` and `0x5D0`.
+A Rust-edited save loaded with both values set to `36000` seconds. After one
+tested minute and an in-game resave, both values were `36060`. A mutation must
+own both four-byte ranges and reject a read when the copies disagree.
+
 ### 7.4 Stats, level, and experience
 
 The current documentation states that demon stats can reset and that level edits can conflict with initial stats and stat points. These edits remain disabled until the project models recalculation rules and tests level-up, battle, healing, and game resave transitions.

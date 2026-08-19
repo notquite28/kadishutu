@@ -13,6 +13,7 @@ use crate::{
         game_save::{EvidenceState, evidence_catalog},
     },
     integrity::{self, HASH_RANGE, HASHED_RANGE_START},
+    play_time,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -97,7 +98,7 @@ struct MutationSpec {
     range: OwnedRange,
     encode: fn(&str) -> Result<Vec<u8>, CliError>,
     linked_range: Option<OwnedRange>,
-    linked_encode: Option<fn(u8, &str) -> Result<u8, CliError>>,
+    linked_encode: Option<fn(&[u8], &str) -> Result<Vec<u8>, CliError>>,
 }
 
 fn essence_spec(definition: EssenceDefinition) -> MutationSpec {
@@ -128,6 +129,22 @@ fn currency_spec(definition: CurrencyDefinition) -> MutationSpec {
         encode: encode_u32,
         linked_range: None,
         linked_encode: None,
+    }
+}
+
+fn play_time_spec() -> MutationSpec {
+    MutationSpec {
+        field: play_time::FIELD,
+        range: OwnedRange {
+            start: play_time::SAVE_SCREEN_OFFSET,
+            end: play_time::SAVE_SCREEN_OFFSET + play_time::WIDTH,
+        },
+        encode: encode_u32,
+        linked_range: Some(OwnedRange {
+            start: play_time::RUNTIME_OFFSET,
+            end: play_time::RUNTIME_OFFSET + play_time::WIDTH,
+        }),
+        linked_encode: Some(encode_linked_u32),
     }
 }
 
@@ -178,6 +195,7 @@ fn mutation_spec(field: &str) -> Option<MutationSpec> {
         .filter(|definition| definition.released())
         .map(essence_spec)
         .or_else(|| currency::by_field(field).map(currency_spec))
+        .or_else(|| (field == play_time::FIELD).then(play_time_spec))
 }
 
 fn encode_u32(value: &str) -> Result<Vec<u8>, CliError> {
@@ -186,6 +204,10 @@ fn encode_u32(value: &str) -> Result<Vec<u8>, CliError> {
         .map(u32::to_le_bytes)
         .map(|bytes| bytes.to_vec())
         .map_err(|_| CliError::CliValue("value must be an unsigned 32-bit integer".to_owned()))
+}
+
+fn encode_linked_u32(_old: &[u8], value: &str) -> Result<Vec<u8>, CliError> {
+    encode_u32(value)
 }
 
 fn encode_owned_bool(value: &str) -> Result<Vec<u8>, CliError> {
@@ -198,13 +220,16 @@ fn encode_owned_bool(value: &str) -> Result<Vec<u8>, CliError> {
     }
 }
 
-fn encode_essence_metadata(old: u8, value: &str) -> Result<u8, CliError> {
+fn encode_essence_metadata(old: &[u8], value: &str) -> Result<Vec<u8>, CliError> {
     const NEW: u8 = 0x02;
     const OWNED: u8 = 0x04;
     const ABSENT: u8 = 0x10;
+    let old = *old
+        .first()
+        .ok_or_else(|| CliError::Internal("essence metadata range is empty".to_owned()))?;
     match value {
-        "0" => Ok(old | NEW | OWNED | ABSENT),
-        "1" => Ok((old | NEW | OWNED) & !ABSENT),
+        "0" => Ok(vec![old | NEW | OWNED | ABSENT]),
+        "1" => Ok(vec![(old | NEW | OWNED) & !ABSENT]),
         _ => Err(CliError::CliValue(
             "essence ownership must be 0 (absent) or 1 (owned)".to_owned(),
         )),
@@ -415,19 +440,27 @@ fn build_writes(
     match (spec.linked_range, spec.linked_encode) {
         (Some(linked_range), Some(linked_encode)) => {
             validate_owned_range(linked_range, plaintext.len())?;
-            if linked_range.start < spec.range.end || linked_range.end - linked_range.start != 1 {
+            if linked_range.start < spec.range.end {
                 return Err(CliError::Internal(
-                    "linked mutation range must be one ordered byte".to_owned(),
+                    "linked mutation range must follow the primary range".to_owned(),
                 ));
             }
-            let old = *plaintext.get(linked_range.start).ok_or_else(|| {
-                CliError::Invariant("linked owned range is outside the save".to_owned())
-            })?;
-            let new = linked_encode(old, &request.value)?;
+            let old = plaintext
+                .get(linked_range.as_range())
+                .ok_or_else(|| {
+                    CliError::Invariant("linked owned range is outside the save".to_owned())
+                })?
+                .to_vec();
+            let new = linked_encode(&old, &request.value)?;
+            if new.len() != old.len() {
+                return Err(CliError::Internal(
+                    "linked mutation encoder returned the wrong byte length".to_owned(),
+                ));
+            }
             writes.push(PlannedWrite {
                 range: linked_range,
-                old: vec![old],
-                new: vec![new],
+                old,
+                new,
             });
         }
         (None, None) => {}
@@ -763,9 +796,51 @@ mod tests {
     }
 
     #[test]
+    fn play_time_mutation_updates_both_copies_and_u32_boundaries() {
+        for value in [0, 36_000, u32::MAX] {
+            let source = synthetic::valid_pc_profile();
+            let request = MutationRequest {
+                field: play_time::FIELD.to_owned(),
+                value: value.to_string(),
+            };
+            let output = execute_set(source, request.clone()).unwrap();
+            assert_eq!(
+                &output.bytes[play_time::SAVE_SCREEN_OFFSET
+                    ..play_time::SAVE_SCREEN_OFFSET + play_time::WIDTH],
+                &value.to_le_bytes()
+            );
+            assert_eq!(
+                &output.bytes
+                    [play_time::RUNTIME_OFFSET..play_time::RUNTIME_OFFSET + play_time::WIDTH],
+                &value.to_le_bytes()
+            );
+            assert_eq!(output.owned_ranges.len(), 2);
+            let repeated = execute_set(output.bytes.clone(), request).unwrap();
+            assert_eq!(repeated.bytes, output.bytes);
+            assert!(repeated.changed_ranges.is_empty());
+        }
+    }
+
+    #[test]
+    fn play_time_mutation_rejects_values_outside_u32() {
+        for value in ["", "-1", "4294967296", "ten hours"] {
+            let error = execute_set(
+                synthetic::valid_pc_profile(),
+                MutationRequest {
+                    field: play_time::FIELD.to_owned(),
+                    value: value.to_owned(),
+                },
+            )
+            .unwrap_err();
+            assert_eq!(error.exit_code(), 2);
+            assert!(error.to_string().contains("unsigned 32-bit"));
+        }
+    }
+
+    #[test]
     fn essence_metadata_transition_preserves_unknown_bits() {
-        assert_eq!(encode_essence_metadata(0x91, "1").unwrap(), 0x87);
-        assert_eq!(encode_essence_metadata(0x81, "0").unwrap(), 0x97);
+        assert_eq!(encode_essence_metadata(&[0x91], "1").unwrap(), vec![0x87]);
+        assert_eq!(encode_essence_metadata(&[0x81], "0").unwrap(), vec![0x97]);
     }
 
     #[test]

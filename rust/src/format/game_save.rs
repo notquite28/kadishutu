@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, sync::LazyLock};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{crypto, currency, essence};
+use crate::{crypto, currency, essence, play_time};
 
 use super::{
     FormatError,
@@ -28,6 +28,7 @@ const READER_IDS: &[&str] = &[
 fn reader_exists(id: &str) -> bool {
     READER_IDS.contains(&id)
         || currency::by_field(id).is_some()
+        || id == play_time::FIELD
         || essence::by_field(id).is_some_and(|definition| definition.released())
 }
 
@@ -231,6 +232,17 @@ impl SaveDocument {
             return Ok(FieldValue::Integer(u64::from(
                 ByteView::new(&self.bytes).u32_le(definition.offset)?,
             )));
+        }
+        if id == play_time::FIELD {
+            let view = ByteView::new(&self.bytes);
+            let save_screen = view.u32_le(play_time::SAVE_SCREEN_OFFSET)?;
+            let runtime = view.u32_le(play_time::RUNTIME_OFFSET)?;
+            if save_screen != runtime {
+                return Err(FormatError::Structure(format!(
+                    "play-time copies disagree: {save_screen} != {runtime}"
+                )));
+            }
+            return Ok(FieldValue::Integer(u64::from(runtime)));
         }
         let header = self.validation.header.as_ref();
         match id {

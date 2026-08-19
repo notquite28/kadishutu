@@ -7,4 +7,5 @@ pub mod format;
 pub mod integrity;
 pub mod io;
 pub mod mutation;
+pub mod play_time;
 pub mod report;

@@ -8,7 +8,7 @@ use kadishutu::{
         game_save::{FieldValue, SaveDocument, evidence_catalog},
         unreal,
     },
-    integrity,
+    integrity, play_time,
 };
 use proptest::prelude::*;
 
@@ -216,6 +216,27 @@ fn currency_reader_returns_exact_u32_values_from_encrypted_save() {
         document.read("game.glory").unwrap(),
         FieldValue::Integer(72)
     );
+}
+
+#[test]
+fn play_time_reader_requires_equal_linked_copies() {
+    let mut plaintext = support::synthetic::valid_pc_profile();
+    for offset in [play_time::SAVE_SCREEN_OFFSET, play_time::RUNTIME_OFFSET] {
+        plaintext[offset..offset + 4].copy_from_slice(&36_000_u32.to_le_bytes());
+    }
+    support::synthetic::update_hash(&mut plaintext);
+    let document = SaveDocument::open(plaintext.clone()).unwrap();
+    assert_eq!(
+        document.read(play_time::FIELD).unwrap(),
+        FieldValue::Integer(36_000)
+    );
+
+    plaintext[play_time::RUNTIME_OFFSET..play_time::RUNTIME_OFFSET + 4]
+        .copy_from_slice(&36_001_u32.to_le_bytes());
+    support::synthetic::update_hash(&mut plaintext);
+    let document = SaveDocument::open(plaintext).unwrap();
+    let error = document.read(play_time::FIELD).unwrap_err();
+    assert!(error.to_string().contains("copies disagree"));
 }
 proptest! {
     #[test]

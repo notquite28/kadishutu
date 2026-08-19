@@ -194,6 +194,14 @@
     {
       "id": "exp-pc-macca-nozuchi-purchase-01",
       "result": "A valid in-game resave after purchasing Nozuchi's Essence reduced Macca at 0x3D32 from 8,210,492 to 8,207,492, a 3,000 Macca purchase. Glory at 0x3D4A remained 72. This confirms both little-endian u32 reads and the Macca write location for profile smtvv-pc-gamesave-449680."
+    },
+    {
+      "id": "exp-pc-play-time-resave-01",
+      "result": "Two valid private PC saves before and after an in-game session changed equal little-endian u32 values at 0x4FD and 0x5D0 from 144,550 to 144,624 seconds (+74). This confirms linked save-screen and runtime play-time copies for profile smtvv-pc-gamesave-449680."
+    },
+    {
+      "id": "exp-pc-play-time-rust-resave-02",
+      "result": "A Rust-edited encrypted save loaded with both play-time copies set to 36,000 seconds (10:00:00). After one tested minute and an in-game resave, both linked u32 values at 0x4FD and 0x5D0 were 36,060 seconds. The game preserved equality and advanced both copies by exactly 60 seconds."
     }
   ],
   "fields": [
@@ -2098,32 +2106,49 @@
     },
     {
       "address": {
-        "end": 1492,
-        "kind": "absolute",
-        "start": 1488
+        "kind": "linked",
+        "ranges": [
+          {
+            "end": 1281,
+            "start": 1277
+          },
+          {
+            "end": 1492,
+            "start": 1488
+          }
+        ]
       },
-      "approved_test_ids": [],
+      "approved_test_ids": [
+        "test-play-time-mutation"
+      ],
       "corpus_evidence": [],
-      "experiment_ids": [],
-      "format_profile": null,
+      "experiment_ids": [
+        "exp-pc-play-time-resave-01",
+        "exp-pc-play-time-rust-resave-02"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
       "id": "game.play_time_seconds",
-      "known_unknowns": [],
-      "last_review_date": "2026-08-15",
-      "links_invariants": [],
-      "observed_range": null,
+      "known_unknowns": [
+        "The accepted game-side maximum has not been independently tested"
+      ],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "The save-screen and runtime copies must be equal"
+      ],
+      "observed_range": "36000..144624",
       "platform_build_evidence": [],
-      "primitive": "u32 seconds",
+      "primitive": "two linked u32 seconds",
       "python_sources": [
         {
           "access": "read-write",
           "path": "src/kadishutu/core/game_save/game.py",
-          "symbol": "GameSaveEditor.play_time_seconds"
+          "symbol": "GameSaveEditor.play_time"
         }
       ],
-      "read_state": "candidate",
+      "read_state": "confirmed-write",
       "semantic_name": "Play Time Seconds",
       "sensitive": false,
-      "write_state": "candidate"
+      "write_state": "confirmed-write"
     },
     {
       "address": {
@@ -3913,6 +3938,10 @@
     {
       "id": "test-fstring-bounds",
       "result": "Bounded FString contract."
+    },
+    {
+      "id": "test-play-time-mutation",
+      "result": "Exact linked u32 reads, copy-disagreement rejection, minimum, maximum, normal, invalid, idempotent, encrypted-envelope, dry-run, output-preservation, and byte-ownership contract."
     },
     {
       "id": "test-sha1-coverage",

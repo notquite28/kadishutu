@@ -131,6 +131,9 @@ The released currency fields are `game.macca` and `game.glory`. They use unsigne
 32-bit decimal values. Rust reads and writes the exact legacy little-endian
 locations and rejects values outside `0..4294967295`.
 
+The released `game.play_time_seconds` field uses unsigned 32-bit seconds. The
+operation updates the linked save-screen and runtime copies in one transaction.
+
 
 The released linked essence fields are:
 
