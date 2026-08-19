@@ -127,6 +127,10 @@ kadishutu set-many <INPUT> --set <FIELD=VALUE>... --output <OUTPUT> [--dry-run] 
 Field names form a versioned public API. They must come from a static registry. A `confirmed-read` field can enter read-only `inspect` and `get`. Only a `confirmed-write` field can enter a mutation command. Initial catalog examples include `game.macca`, `game.glory`, `game.play_time_seconds`, and `player.level`, but non-confirmed records are metadata only and are not readable.
 
 Renaming or removing a released field requires a documented breaking release. Internal Rust type or module names must not leak into field names.
+The released currency fields are `game.macca` and `game.glory`. They use unsigned
+32-bit decimal values. Rust reads and writes the exact legacy little-endian
+locations and rejects values outside `0..4294967295`.
+
 
 The released linked essence fields are:
 

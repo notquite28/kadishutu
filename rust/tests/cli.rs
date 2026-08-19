@@ -64,7 +64,13 @@ fn evidence_approved_pc_profile_reports_success() {
 #[test]
 fn candidate_get_is_one_json_error_object_and_exit_two() {
     let output = binary()
-        .args(["get", "unused.sav", "game.macca", "--format", "json"])
+        .args([
+            "get",
+            "unused.sav",
+            "game.play_time_seconds",
+            "--format",
+            "json",
+        ])
         .output()
         .unwrap();
     assert_eq!(output.status.code(), Some(2));
@@ -120,7 +126,7 @@ fn unreleased_mutation_fields_are_rejected_by_set() {
         .args([
             "set",
             input.to_str().unwrap(),
-            "game.macca",
+            "game.play_time_seconds",
             "100",
             "--output",
             output.to_str().unwrap(),
@@ -308,6 +314,44 @@ fn set_many_supports_repeated_assignments_dry_run_and_duplicate_rejection() {
         .unwrap();
     assert_eq!(duplicate.status.code(), Some(2));
     assert!(!output.exists());
+}
+
+#[test]
+fn encrypted_currency_batch_writes_exact_u32_values() {
+    let directory = tempdir().unwrap();
+    let input = directory.path().join("input.sav");
+    let output = directory.path().join("output.sav");
+    let plaintext = support::synthetic::valid_pc_profile();
+    let encrypted = crypto::encrypt(&plaintext).unwrap();
+    fs::write(&input, &encrypted).unwrap();
+
+    let result = binary()
+        .args([
+            "set-many",
+            input.to_str().unwrap(),
+            "--set",
+            "game.macca=8207492",
+            "--set",
+            "game.glory=72",
+            "--output",
+            output.to_str().unwrap(),
+            "--format",
+            "json",
+        ])
+        .output()
+        .unwrap();
+
+    assert!(result.status.success());
+    let decrypted = crypto::decrypt(&fs::read(&output).unwrap()).unwrap();
+    assert_eq!(
+        u32::from_le_bytes(decrypted[0x3d32..0x3d36].try_into().unwrap()),
+        8_207_492
+    );
+    assert_eq!(
+        u32::from_le_bytes(decrypted[0x3d4a..0x3d4e].try_into().unwrap()),
+        72
+    );
+    assert_eq!(fs::read(&input).unwrap(), encrypted);
 }
 
 #[test]

@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, sync::LazyLock};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{crypto, essence};
+use crate::{crypto, currency, essence};
 
 use super::{
     FormatError,
@@ -27,6 +27,7 @@ const READER_IDS: &[&str] = &[
 
 fn reader_exists(id: &str) -> bool {
     READER_IDS.contains(&id)
+        || currency::by_field(id).is_some()
         || essence::by_field(id).is_some_and(|definition| definition.released())
 }
 
@@ -225,6 +226,11 @@ impl SaveDocument {
                 owned_flag: metadata & 0x04 != 0,
                 consistent: fusion_available == main_menu_present,
             }));
+        }
+        if let Some(definition) = currency::by_field(id) {
+            return Ok(FieldValue::Integer(u64::from(
+                ByteView::new(&self.bytes).u32_le(definition.offset)?,
+            )));
         }
         let header = self.validation.header.as_ref();
         match id {

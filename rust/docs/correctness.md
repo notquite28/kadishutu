@@ -299,6 +299,12 @@ Rust primitive capacity is not a safe game range. For each numeric field, record
 
 Do not use examples such as `0xffff` as proof that every stored `u16` value is safe.
 
+The legacy Macca and Glory controls accept the full unsigned 32-bit storage
+range. Rust keeps that compatibility contract and reports the untested game-side
+maximum in the evidence record. A Rust-edited save loaded and resaved successfully.
+Normal game actions changed Macca `8210492 -> 8234422` and Glory `100 -> 10`.
+This confirms game-side arithmetic and persistence for both released fields.
+
 ### 7.4 Stats, level, and experience
 
 The current documentation states that demon stats can reset and that level edits can conflict with initial stats and stat points. These edits remain disabled until the project models recalculation rules and tests level-up, battle, healing, and game resave transitions.

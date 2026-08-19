@@ -1,5 +1,6 @@
 pub mod cli;
 pub mod crypto;
+pub mod currency;
 pub mod error;
 pub mod essence;
 pub mod format;

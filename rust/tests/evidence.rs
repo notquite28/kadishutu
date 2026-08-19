@@ -147,7 +147,7 @@ fn unreal_parser_reads_count_before_entries() {
 fn embedded_catalog_and_reader_map_are_consistent() {
     let catalog = evidence_catalog().unwrap();
     assert!(catalog.get("save.profile").unwrap().readable());
-    assert!(!catalog.get("game.macca").unwrap().readable());
+    assert!(catalog.get("game.macca").unwrap().readable());
     assert!(catalog.get("player.name.first").unwrap().sensitive);
     let ids = catalog
         .fields()
@@ -201,6 +201,22 @@ fn released_essence_reader_accepts_valid_encrypted_save() {
     assert!(state.main_menu_present);
 }
 
+#[test]
+fn currency_reader_returns_exact_u32_values_from_encrypted_save() {
+    let mut plaintext = support::synthetic::valid_pc_profile();
+    plaintext[0x3d32..0x3d36].copy_from_slice(&8_207_492_u32.to_le_bytes());
+    plaintext[0x3d4a..0x3d4e].copy_from_slice(&72_u32.to_le_bytes());
+    support::synthetic::update_hash(&mut plaintext);
+    let document = SaveDocument::open(crypto::encrypt(&plaintext).unwrap()).unwrap();
+    assert_eq!(
+        document.read("game.macca").unwrap(),
+        FieldValue::Integer(8_207_492)
+    );
+    assert_eq!(
+        document.read("game.glory").unwrap(),
+        FieldValue::Integer(72)
+    );
+}
 proptest! {
     #[test]
     fn detection_never_panics(bytes in proptest::collection::vec(any::<u8>(), 0..500_000)) {

@@ -5,6 +5,7 @@ use sha1::{Digest, Sha1};
 
 use crate::{
     crypto,
+    currency::{self, CurrencyDefinition},
     error::CliError,
     essence::{self, EssenceDefinition},
     format::{
@@ -117,6 +118,19 @@ fn essence_spec(definition: EssenceDefinition) -> MutationSpec {
     }
 }
 
+fn currency_spec(definition: CurrencyDefinition) -> MutationSpec {
+    MutationSpec {
+        field: definition.field,
+        range: OwnedRange {
+            start: definition.offset,
+            end: definition.offset + 4,
+        },
+        encode: encode_u32,
+        linked_range: None,
+        linked_encode: None,
+    }
+}
+
 pub fn execute_set(source: Vec<u8>, request: MutationRequest) -> Result<MutationOutput, CliError> {
     execute_set_many(source, vec![request])
 }
@@ -163,6 +177,15 @@ fn mutation_spec(field: &str) -> Option<MutationSpec> {
     essence::by_field(field)
         .filter(|definition| definition.released())
         .map(essence_spec)
+        .or_else(|| currency::by_field(field).map(currency_spec))
+}
+
+fn encode_u32(value: &str) -> Result<Vec<u8>, CliError> {
+    value
+        .parse::<u32>()
+        .map(u32::to_le_bytes)
+        .map(|bytes| bytes.to_vec())
+        .map_err(|_| CliError::CliValue("value must be an unsigned 32-bit integer".to_owned()))
 }
 
 fn encode_owned_bool(value: &str) -> Result<Vec<u8>, CliError> {
@@ -697,6 +720,46 @@ mod tests {
         .unwrap_err();
         assert_eq!(overlap.exit_code(), 6);
         assert!(overlap.to_string().contains("overlap"));
+    }
+
+    #[test]
+    fn currency_mutations_cover_u32_boundaries_and_idempotence() {
+        for definition in currency::CURRENCIES {
+            let spec = currency_spec(*definition);
+            for value in [0, 8_207_492, u32::MAX] {
+                let source = synthetic::valid_pc_profile();
+                let request = MutationRequest {
+                    field: definition.field.to_owned(),
+                    value: value.to_string(),
+                };
+                let output = execute_set(source.clone(), request.clone()).unwrap();
+                assert_eq!(
+                    &output.bytes[definition.offset..definition.offset + 4],
+                    &value.to_le_bytes()
+                );
+                assert_eq!(output.owned_ranges, vec![spec.range]);
+                assert!(integrity::validate_sha1(&output.bytes).unwrap());
+                let repeated = execute_set(output.bytes.clone(), request).unwrap();
+                assert_eq!(repeated.bytes, output.bytes);
+                assert!(repeated.changed_ranges.is_empty());
+            }
+        }
+    }
+
+    #[test]
+    fn currency_mutations_reject_values_outside_u32() {
+        for value in ["", "-1", "4294967296", "one"] {
+            let error = execute_set(
+                synthetic::valid_pc_profile(),
+                MutationRequest {
+                    field: "game.macca".to_owned(),
+                    value: value.to_owned(),
+                },
+            )
+            .unwrap_err();
+            assert_eq!(error.exit_code(), 2);
+            assert!(error.to_string().contains("unsigned 32-bit"));
+        }
     }
 
     #[test]
