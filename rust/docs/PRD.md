@@ -152,8 +152,10 @@ The released linked essence fields are:
 - `essences.aogami_type_c.owned`;
 - `essences.nozuchi.owned`.
 
-Use `0` for absent and `1` for owned. Each operation updates the item byte and
-the linked metadata byte. It preserves unknown metadata bits.
+Use `0` for previously acquired but currently absent and `1` for present and
+acknowledged. Each operation updates the item byte and linked metadata byte and
+preserves unknown metadata bits. This operation models consumption and
+reacquisition. It does not simulate a first acquisition or progression unlock.
 
 `inspect` and `get` report the linked state for each released essence field:
 
@@ -163,10 +165,24 @@ the linked metadata byte. It preserves unknown metadata bits.
 - `New` and `Owned` metadata flags;
 - whether the two user-visible states are consistent.
 
+Confirmed Aogami states are:
+
+| Amount | Metadata | Meaning |
+| ---: | ---: | --- |
+| `0` | `0x00` | Never acquired. |
+| `1` | `0x02` | First acquired and new. |
+| `1` | `0x06` | Present and acknowledged or reacquired. |
+| `0` | `0x16` | Previously acquired and currently consumed. |
+| `1` | `0x16` | Split state; Fusion and main-menu presence disagree. |
+
 The static Rust identity table contains all 395 legacy essence item IDs. The 11
 listed fields are released. The other 384 entries remain `candidate` and cannot
 be read or written through the CLI until controlled evidence covers their linked
 addresses and game behavior.
+
+A controlled first acquisition confirms Aogami Type-8 state `0/0x00 -> 1/0x02`.
+Type-8 remains candidate-only because the released operation models consumption
+and reacquisition, not the first acquisition or its progression state.
 
 ### 7.5 Validation output
 

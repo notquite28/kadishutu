@@ -176,12 +176,20 @@
       "result": "A Rust-edited encrypted save loaded and resaved successfully in-game with Macca 8,210,492 and Glory 100. During the test, normal game actions changed Macca to 8,234,422 (+23,930) and Glory to 10 (-90). The game preserved both fields as little-endian u32 values at 0x3D32 and 0x3D4A and applied normal currency arithmetic."
     },
     {
+      "id": "exp-pc-essence-aogami-type-8-first-acquisition-01",
+      "result": "A controlled private PC pair captured immediately before and after the first legal acquisition of the Aogami Type-8 husk. Item ID 551 at 0x4E99 changed from 0 to 1, and linked metadata at 0x5219 changed from 0x00 to 0x02. This confirms the never-acquired state 0/0x00 and first-acquired new state 1/0x02 for this Aogami slot. The other 30 changed payload bytes are gameplay, time, position, and related interaction state."
+    },
+    {
       "id": "exp-pc-essence-aogami-type-c-01",
       "result": "Selecting the legacy ownership checkbox for Aogami Type-C on a private PC save changed only item ID 558 at offset 0x4EA0 from 0 to 1. A later in-game test showed that this single-byte edit did not make Type-C present. It records the checkbox behavior, not a complete semantic addition. Both encrypted sources pass complete validation. Game build and DLC metadata remain unknown."
     },
     {
       "id": "exp-pc-essence-aogami-type-c-game-01",
       "result": "An in-game test of the ownership-only Rust edit left Aogami Type-C absent and showed only Aogami Type-6 present. In the tested source, Type-6 metadata at 0x5217 is 0x06. Metadata for the absent Type-1 through Type-5, Type-7, and Type-A through Type-C entries is 0x16. The legacy flags define 0x10 as Absent, 0x04 as Owned, and 0x02 as New. This disproves ownership-byte-only semantic mutation."
+    },
+    {
+      "id": "exp-pc-essence-aogami-type-c-legal-acquisition-03",
+      "result": "A controlled private PC pair captured immediately before and after legally reacquiring an Aogami Type-C husk that had been acquired previously. Item ID 558 at 0x4EA0 changed from 0 to 1, and linked metadata at 0x5220 changed from 0x16 to 0x06. The transition exactly matches the released Rust linked mutation. The other 35 changed payload bytes are gameplay, time, position, and related interaction state."
     },
     {
       "id": "exp-pc-essence-aogami-type-c-linked-game-02",
@@ -194,6 +202,10 @@
     {
       "id": "exp-pc-essence-removal-01",
       "result": "A private PC save with Aogami Type-1 through Type-7 and Type-A through Type-C ownership checkboxes cleared was compared with the validated baseline for profile smtvv-pc-gamesave-449680. Item IDs 544 through 550 and 556 through 557 changed from 1 to 0 at offsets 0x4E92 through 0x4E98 and 0x4E9E through 0x4E9F. Item ID 558 for Type-C was 0 in both files. Metadata did not change, and a later game test showed that Type-6 remained present. Both encrypted sources pass complete validation. Game build and DLC metadata remain unknown."
+    },
+    {
+      "id": "exp-pc-essence-state-inventory-01",
+      "result": "One private PC save contains five relevant amount/metadata patterns among named essences: 162 at 0/0x00, 10 at 1/0x02, 68 at 1/0x06, 47 at 0/0x16, and 9 at 1/0x16. Legacy is_new behavior and current UI evidence support, but do not yet prove, that 0/0x00 is never acquired, 1/0x02 is first-acquired and new, 1/0x06 is present and acknowledged, 0/0x16 is previously acquired and consumed, and 1/0x16 is a split state."
     },
     {
       "id": "exp-pc-macca-nozuchi-purchase-01",
@@ -1618,6 +1630,7 @@
       "experiment_ids": [
         "exp-pc-essence-aogami-type-c-01",
         "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-legal-acquisition-03",
         "exp-pc-essence-aogami-type-c-linked-game-02",
         "exp-pc-essence-nozuchi-purchase-01",
         "exp-pc-essence-removal-01"
@@ -1625,7 +1638,8 @@
       "format_profile": "smtvv-pc-gamesave-449680",
       "id": "essences.aogami_type_c.owned",
       "known_unknowns": [
-        "Game build and DLC metadata for the controlled saves are unknown"
+        "Game build and DLC metadata for the controlled saves are unknown",
+        "The first-acquisition metadata transition remains unobserved"
       ],
       "last_review_date": "2026-08-18",
       "links_invariants": [
@@ -1672,9 +1686,12 @@
       "approved_test_ids": [],
       "corpus_evidence": [],
       "experiment_ids": [
+        "exp-pc-essence-aogami-type-8-first-acquisition-01",
         "exp-pc-essence-aogami-type-c-game-01",
+        "exp-pc-essence-aogami-type-c-legal-acquisition-03",
         "exp-pc-essence-aogami-type-c-linked-game-02",
-        "exp-pc-essence-nozuchi-purchase-01"
+        "exp-pc-essence-nozuchi-purchase-01",
+        "exp-pc-essence-state-inventory-01"
       ],
       "format_profile": null,
       "id": "essences.metadata",
@@ -1768,9 +1785,12 @@
       "approved_test_ids": [],
       "corpus_evidence": [],
       "experiment_ids": [
+        "exp-pc-essence-aogami-type-8-first-acquisition-01",
         "exp-pc-essence-aogami-type-c-01",
+        "exp-pc-essence-aogami-type-c-legal-acquisition-03",
         "exp-pc-essence-nozuchi-purchase-01",
-        "exp-pc-essence-removal-01"
+        "exp-pc-essence-removal-01",
+        "exp-pc-essence-state-inventory-01"
       ],
       "format_profile": null,
       "id": "essences.owned",

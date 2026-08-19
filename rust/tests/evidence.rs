@@ -162,11 +162,13 @@ fn released_essence_reader_reports_present_absent_split_and_unknown_bits() {
     let owned = 0x4ea0;
     let metadata = 0x5220;
 
-    for (amount, flags, expected_present, expected_consistent) in [
-        (1, 0x06, true, true),
-        (0, 0x16, false, true),
-        (1, 0x16, false, false),
-        (0, 0x86, true, false),
+    for (amount, flags, expected_present, expected_new, expected_consistent) in [
+        (0, 0x00, false, false, true),
+        (1, 0x02, true, true, true),
+        (1, 0x06, true, false, true),
+        (0, 0x16, false, false, true),
+        (1, 0x16, false, false, false),
+        (0, 0x86, true, false, false),
     ] {
         bytes[owned] = amount;
         bytes[metadata] = flags;
@@ -182,7 +184,7 @@ fn released_essence_reader_reports_present_absent_split_and_unknown_bits() {
         assert_eq!(state.main_menu_present, expected_present);
         assert_eq!(state.consistent, expected_consistent);
         assert_eq!(state.owned_flag, flags & 0x04 != 0);
-        assert_eq!(state.new, flags & 0x02 != 0);
+        assert_eq!(state.new, expected_new);
     }
 }
 

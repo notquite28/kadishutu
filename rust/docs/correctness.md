@@ -324,6 +324,13 @@ After one use of each item, the game resaved them as `24`, `14`, and `29`.
 
 An essence has an amount and metadata flags. A write must preserve unknown flag bits and maintain proven coupling. The released Aogami and Nozuchi operations own both proven bytes and follow the legacy `give` and `take` flag transitions. Every candidate essence remains disabled until its item ID, metadata address, and in-game behavior pass the same gate.
 
+A legal Aogami Type-C husk reacquisition changed ownership `0 -> 1` and
+metadata `0x16 -> 0x06`. This exactly matches the released Rust operation.
+A controlled first acquisition of Aogami Type-8 changed ownership `0 -> 1`
+and metadata `0x00 -> 0x02`. This confirms the never-acquired and first-acquired
+new states for that slot. The released `owned` operation still models
+consumption and reacquisition; it does not simulate a first acquisition.
+
 Use `tools/evidence.py compare-essence` for a controlled purchase or removal:
 
 ```sh

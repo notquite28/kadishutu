@@ -32,6 +32,10 @@ Released essence reads report the item amount, metadata flags, both user-visible
 states, and consistency. The static essence identity table contains all 395
 legacy essence IDs. The other 384 entries remain candidate-only.
 
+Aogami Type-8 has confirmed first-acquisition evidence but remains candidate
+because first acquisition includes progression state outside the released
+consumption and reacquisition operation.
+
 The application does not provide in-place writes, backups, a GUI, scripts,
 plug-ins, player or demon stat writes, party edits, position edits, quest or
 compendium writes, or `SysSave` support.

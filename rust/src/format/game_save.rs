@@ -218,14 +218,17 @@ impl SaveDocument {
             let amount = view.u8(definition.owned_offset())?;
             let metadata = view.u8(definition.metadata_offset())?;
             let fusion_available = amount != 0;
-            let main_menu_present = metadata & 0x10 == 0;
+            let new_flag = metadata & 0x02 != 0;
+            let owned_flag = metadata & 0x04 != 0;
+            let absent_flag = metadata & 0x10 != 0;
+            let main_menu_present = new_flag && !absent_flag;
             return Ok(FieldValue::Essence(EssenceState {
                 amount,
                 metadata,
                 fusion_available,
                 main_menu_present,
-                new: metadata & 0x02 != 0,
-                owned_flag: metadata & 0x04 != 0,
+                new: new_flag && !owned_flag && !absent_flag,
+                owned_flag,
                 consistent: fusion_available == main_menu_present,
             }));
         }
