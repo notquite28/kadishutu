@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, sync::LazyLock};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{crypto, currency, essence, play_time};
+use crate::{crypto, currency, essence, item, play_time};
 
 use super::{
     FormatError,
@@ -28,6 +28,7 @@ const READER_IDS: &[&str] = &[
 fn reader_exists(id: &str) -> bool {
     READER_IDS.contains(&id)
         || currency::by_field(id).is_some()
+        || item::by_field(id).is_some()
         || id == play_time::FIELD
         || essence::by_field(id).is_some_and(|definition| definition.released())
 }
@@ -231,6 +232,11 @@ impl SaveDocument {
         if let Some(definition) = currency::by_field(id) {
             return Ok(FieldValue::Integer(u64::from(
                 ByteView::new(&self.bytes).u32_le(definition.offset)?,
+            )));
+        }
+        if let Some(definition) = item::by_field(id) {
+            return Ok(FieldValue::Integer(u64::from(
+                ByteView::new(&self.bytes).u8(definition.offset())?,
             )));
         }
         if id == play_time::FIELD {

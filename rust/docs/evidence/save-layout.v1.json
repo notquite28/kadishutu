@@ -168,6 +168,10 @@
       "result": "Three private PC cases from two independent source groups have length 449680, identical exact UE headers, valid GVAS markers, and stored SHA-1 values that independently match SHA-1 over 0x40..EOF. Their encrypted members are distinct AES-block sequences without plaintext GVAS. Build and DLC metadata remain unknown."
     },
     {
+      "id": "exp-pc-consumables-rust-resave-01",
+      "result": "A Rust-edited encrypted save loaded with Life Stone 25, Chakra Drop 15, and Medicine 30. Each item was used once. The in-game resave stored 24, 14, and 29 at item-table offsets 0x4C73, 0x4C74, and 0x4C7D. This confirms normal one-byte decrement and persistence for all three released consumables."
+    },
+    {
       "id": "exp-pc-currency-rust-resave-01",
       "result": "A Rust-edited encrypted save loaded and resaved successfully in-game with Macca 8,210,492 and Glory 100. During the test, normal game actions changed Macca to 8,234,422 (+23,930) and Glory to 10 (-90). The game preserved both fields as little-endian u32 values at 0x3D32 and 0x3D4A and applied normal currency arithmetic."
     },
@@ -2506,6 +2510,126 @@
     },
     {
       "address": {
+        "end": 19573,
+        "kind": "absolute",
+        "start": 19572
+      },
+      "approved_test_ids": [
+        "test-item-amount-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-consumables-rust-resave-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "items.chakra_drop.amount",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "Game inventory limit is 30"
+      ],
+      "observed_range": "14..15",
+      "platform_build_evidence": [],
+      "primitive": "u8 amount",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/items.py",
+          "symbol": "ItemEditor.amount"
+        },
+        {
+          "access": "write",
+          "path": "src/kadishutu/gui/game_save/items.py",
+          "symbol": "ItemEditorWidget.on_apply_changes"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Chakra Drop amount",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "end": 19572,
+        "kind": "absolute",
+        "start": 19571
+      },
+      "approved_test_ids": [
+        "test-item-amount-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-consumables-rust-resave-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "items.life_stone.amount",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "Game inventory limit is 50"
+      ],
+      "observed_range": "24..25",
+      "platform_build_evidence": [],
+      "primitive": "u8 amount",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/items.py",
+          "symbol": "ItemEditor.amount"
+        },
+        {
+          "access": "write",
+          "path": "src/kadishutu/gui/game_save/items.py",
+          "symbol": "ItemEditorWidget.on_apply_changes"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Life Stone amount",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
+        "end": 19582,
+        "kind": "absolute",
+        "start": 19581
+      },
+      "approved_test_ids": [
+        "test-item-amount-mutation"
+      ],
+      "corpus_evidence": [],
+      "experiment_ids": [
+        "exp-pc-consumables-rust-resave-01"
+      ],
+      "format_profile": "smtvv-pc-gamesave-449680",
+      "id": "items.medicine.amount",
+      "known_unknowns": [],
+      "last_review_date": "2026-08-18",
+      "links_invariants": [
+        "Game inventory limit is 50"
+      ],
+      "observed_range": "29..30",
+      "platform_build_evidence": [],
+      "primitive": "u8 amount",
+      "python_sources": [
+        {
+          "access": "read-write",
+          "path": "src/kadishutu/core/game_save/items.py",
+          "symbol": "ItemEditor.amount"
+        },
+        {
+          "access": "write",
+          "path": "src/kadishutu/gui/game_save/items.py",
+          "symbol": "ItemEditorWidget.on_apply_changes"
+        }
+      ],
+      "read_state": "confirmed-write",
+      "semantic_name": "Medicine amount",
+      "sensitive": false,
+      "write_state": "confirmed-write"
+    },
+    {
+      "address": {
         "end": 16078,
         "kind": "absolute",
         "start": 15694
@@ -3930,6 +4054,10 @@
     {
       "id": "test-currency-mutation",
       "result": "Exact u32 little-endian reads, minimum, maximum, normal, invalid, idempotent, encrypted-envelope, dry-run, output-preservation, and byte-ownership contract."
+    },
+    {
+      "id": "test-item-amount-mutation",
+      "result": "Exact u8 reads, per-item limit boundaries, invalid values, idempotence, encrypted batch behavior, output preservation, and byte-ownership contract."
     },
     {
       "id": "test-linked-essence-mutation",

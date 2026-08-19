@@ -134,6 +134,15 @@ locations and rejects values outside `0..4294967295`.
 The released `game.play_time_seconds` field uses unsigned 32-bit seconds. The
 operation updates the linked save-screen and runtime copies in one transaction.
 
+The released consumable fields are:
+
+- `items.life_stone.amount`, limited to `0..50`;
+- `items.chakra_drop.amount`, limited to `0..30`;
+- `items.medicine.amount`, limited to `0..50`.
+
+Each operation updates one item-table byte and rejects values above the recorded
+game inventory limit.
+
 
 The released linked essence fields are:
 

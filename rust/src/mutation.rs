@@ -13,6 +13,7 @@ use crate::{
         game_save::{EvidenceState, evidence_catalog},
     },
     integrity::{self, HASH_RANGE, HASHED_RANGE_START},
+    item::{self, ItemDefinition},
     play_time,
 };
 
@@ -132,6 +133,23 @@ fn currency_spec(definition: CurrencyDefinition) -> MutationSpec {
     }
 }
 
+fn item_spec(definition: ItemDefinition) -> MutationSpec {
+    MutationSpec {
+        field: definition.field,
+        range: OwnedRange {
+            start: definition.offset(),
+            end: definition.offset() + 1,
+        },
+        encode: match definition.limit {
+            30 => encode_item_30,
+            50 => encode_item_50,
+            _ => encode_item_unsupported,
+        },
+        linked_range: None,
+        linked_encode: None,
+    }
+}
+
 fn play_time_spec() -> MutationSpec {
     MutationSpec {
         field: play_time::FIELD,
@@ -195,6 +213,7 @@ fn mutation_spec(field: &str) -> Option<MutationSpec> {
         .filter(|definition| definition.released())
         .map(essence_spec)
         .or_else(|| currency::by_field(field).map(currency_spec))
+        .or_else(|| item::by_field(field).map(item_spec))
         .or_else(|| (field == play_time::FIELD).then(play_time_spec))
 }
 
@@ -204,6 +223,34 @@ fn encode_u32(value: &str) -> Result<Vec<u8>, CliError> {
         .map(u32::to_le_bytes)
         .map(|bytes| bytes.to_vec())
         .map_err(|_| CliError::CliValue("value must be an unsigned 32-bit integer".to_owned()))
+}
+
+fn encode_item_amount(value: &str, limit: u8) -> Result<Vec<u8>, CliError> {
+    let amount = value.parse::<u8>().map_err(|_| {
+        CliError::CliValue(format!(
+            "item amount must be an integer from 0 through {limit}"
+        ))
+    })?;
+    if amount > limit {
+        return Err(CliError::CliValue(format!(
+            "item amount must be an integer from 0 through {limit}"
+        )));
+    }
+    Ok(vec![amount])
+}
+
+fn encode_item_30(value: &str) -> Result<Vec<u8>, CliError> {
+    encode_item_amount(value, 30)
+}
+
+fn encode_item_50(value: &str) -> Result<Vec<u8>, CliError> {
+    encode_item_amount(value, 50)
+}
+
+fn encode_item_unsupported(_value: &str) -> Result<Vec<u8>, CliError> {
+    Err(CliError::Internal(
+        "released item has no amount encoder".to_owned(),
+    ))
 }
 
 fn encode_linked_u32(_old: &[u8], value: &str) -> Result<Vec<u8>, CliError> {
@@ -792,6 +839,51 @@ mod tests {
             .unwrap_err();
             assert_eq!(error.exit_code(), 2);
             assert!(error.to_string().contains("unsigned 32-bit"));
+        }
+    }
+
+    #[test]
+    fn item_amount_mutations_enforce_limits_and_idempotence() {
+        for definition in item::ITEMS {
+            for value in [0, definition.limit] {
+                let source = synthetic::valid_pc_profile();
+                let request = MutationRequest {
+                    field: definition.field.to_owned(),
+                    value: value.to_string(),
+                };
+                let output = execute_set(source, request.clone()).unwrap();
+                assert_eq!(output.bytes[definition.offset()], value);
+                assert_eq!(output.owned_ranges, vec![item_spec(*definition).range]);
+                let repeated = execute_set(output.bytes.clone(), request).unwrap();
+                assert_eq!(repeated.bytes, output.bytes);
+                assert!(repeated.changed_ranges.is_empty());
+            }
+            let error = execute_set(
+                synthetic::valid_pc_profile(),
+                MutationRequest {
+                    field: definition.field.to_owned(),
+                    value: (u16::from(definition.limit) + 1).to_string(),
+                },
+            )
+            .unwrap_err();
+            assert_eq!(error.exit_code(), 2);
+            assert!(error.to_string().contains(&definition.limit.to_string()));
+        }
+    }
+
+    #[test]
+    fn item_amount_mutations_reject_non_u8_values() {
+        for value in ["", "-1", "256", "many"] {
+            let error = execute_set(
+                synthetic::valid_pc_profile(),
+                MutationRequest {
+                    field: "items.life_stone.amount".to_owned(),
+                    value: value.to_owned(),
+                },
+            )
+            .unwrap_err();
+            assert_eq!(error.exit_code(), 2);
+            assert!(error.to_string().contains("0 through 50"));
         }
     }
 

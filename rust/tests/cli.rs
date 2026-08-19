@@ -385,6 +385,41 @@ fn encrypted_play_time_set_updates_both_copies() {
 }
 
 #[test]
+fn encrypted_item_batch_writes_released_amounts() {
+    let directory = tempdir().unwrap();
+    let input = directory.path().join("input.sav");
+    let output = directory.path().join("output.sav");
+    let plaintext = support::synthetic::valid_pc_profile();
+    let encrypted = crypto::encrypt(&plaintext).unwrap();
+    fs::write(&input, &encrypted).unwrap();
+
+    let result = binary()
+        .args([
+            "set-many",
+            input.to_str().unwrap(),
+            "--set",
+            "items.life_stone.amount=25",
+            "--set",
+            "items.chakra_drop.amount=15",
+            "--set",
+            "items.medicine.amount=30",
+            "--output",
+            output.to_str().unwrap(),
+            "--format",
+            "json",
+        ])
+        .output()
+        .unwrap();
+
+    assert!(result.status.success());
+    let decrypted = crypto::decrypt(&fs::read(&output).unwrap()).unwrap();
+    assert_eq!(decrypted[0x4c73], 25);
+    assert_eq!(decrypted[0x4c74], 15);
+    assert_eq!(decrypted[0x4c7d], 30);
+    assert_eq!(fs::read(&input).unwrap(), encrypted);
+}
+
+#[test]
 fn old_mutation_commands_remain_absent() {
     for command in ["edit", "gui", "run_script", "update_hash"] {
         binary().arg(command).assert().code(2);

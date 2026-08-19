@@ -316,6 +316,12 @@ The current documentation states that demon stats can reset and that level edits
 
 ### 7.5 Items and essences
 
+Released consumable amounts use one item-table byte and enforce the game limits
+recorded by the legacy data table. Life Stone and Medicine use `0..50`; Chakra
+Drop uses `0..30`. A Rust-edited save loaded with amounts `25`, `15`, and `30`.
+After one use of each item, the game resaved them as `24`, `14`, and `29`.
+
+
 An essence has an amount and metadata flags. A write must preserve unknown flag bits and maintain proven coupling. The released Aogami and Nozuchi operations own both proven bytes and follow the legacy `give` and `take` flag transitions. Every candidate essence remains disabled until its item ID, metadata address, and in-game behavior pass the same gate.
 
 Use `tools/evidence.py compare-essence` for a controlled purchase or removal:

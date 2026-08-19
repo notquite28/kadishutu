@@ -8,7 +8,7 @@ use kadishutu::{
         game_save::{FieldValue, SaveDocument, evidence_catalog},
         unreal,
     },
-    integrity, play_time,
+    integrity, item, play_time,
 };
 use proptest::prelude::*;
 
@@ -237,6 +237,22 @@ fn play_time_reader_requires_equal_linked_copies() {
     let document = SaveDocument::open(plaintext).unwrap();
     let error = document.read(play_time::FIELD).unwrap_err();
     assert!(error.to_string().contains("copies disagree"));
+}
+
+#[test]
+fn released_item_reader_returns_exact_u8_amounts() {
+    let mut plaintext = support::synthetic::valid_pc_profile();
+    for (definition, amount) in item::ITEMS.iter().zip([25_u8, 15, 30]) {
+        plaintext[definition.offset()] = amount;
+    }
+    support::synthetic::update_hash(&mut plaintext);
+    let document = SaveDocument::open(crypto::encrypt(&plaintext).unwrap()).unwrap();
+    for (definition, amount) in item::ITEMS.iter().zip([25_u64, 15, 30]) {
+        assert_eq!(
+            document.read(definition.field).unwrap(),
+            FieldValue::Integer(amount)
+        );
+    }
 }
 proptest! {
     #[test]
