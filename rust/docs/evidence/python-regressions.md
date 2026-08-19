@@ -9,7 +9,7 @@ This file maps known Python defects to Rust checks. The Python result is evidenc
 | `python-missing-encrypt-call` | `cmd_encrypt` tests a bound method without calling it. | Stage 1 has no `encrypt` command. The command parser rejects it with exit code 2. Stage 2 must test the file-state call. |
 | `python-reflective-inspect` | Inspect traverses arbitrary attributes. | Rust inspect uses only the static evidence catalog. Unknown field IDs return exit code 2. |
 | `python-run-script` | The CLI imports and runs arbitrary Python. | Stage 1 has no `run_script` command. The command parser rejects it with exit code 2. |
-| `python-direct-overwrite` | The edit command overwrites the input path directly. | Stage 1 commands open input read-only and preserve content, permissions, and modification time. Mutation remains blocked. |
+| `python-direct-overwrite` | The edit command overwrites the input path directly. | Released Rust mutations require an explicit new output, use transactional persistence, and preserve the source. In-place mutation remains unavailable. |
 | `python-essence-metadata-global-offset` | `EssenceEditor.metadata` applies one global `+0x380` descriptor to every essence. | Controlled in-game evidence supports the descriptor for the tested Aogami slots. Rust linked mutations preserve unknown bits and keep untested slots disabled. |
 | `python-demon-capacity-conflict` | The table constant is 30. The manager iterates 24 entries. | The inventory keeps both claims. Demon reads and writes remain blocked until corpus evidence resolves capacity. |
 | `python-incomplete-quests` | Quest entries contain unknown bytes and have a provisional boundary. | Quest fields are not readable. A complete-boundary parser test remains blocked. |

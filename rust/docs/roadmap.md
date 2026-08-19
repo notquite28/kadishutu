@@ -1,11 +1,24 @@
 # Rust port roadmap
 
-Status: Proposed  
-Date: 2026-08-15
+Status: Active  
+Updated: 2026-08-18
 
-Implementation state: Stages 0, 1, and 2 pass for the PC profile `smtvv-pc-gamesave-449680`. Switch support remains deferred.
+Implementation state: Stages 0 through 4 pass for PC profile
+`smtvv-pc-gamesave-449680`. Stage 5 is in progress. Switch support remains
+deferred.
 
 This roadmap is evidence-gated. A stage ends when its exit criteria pass. A calendar date does not override a failed correctness gate.
+
+| Stage | State | Current result |
+| --- | --- | --- |
+| 0: Knowledge inventory | Complete | 100 fields are classified in the evidence inventory. |
+| 1: Read-only CLI | Complete | Validation, inspection, stable reports, parser tests, and fuzz targets exist. |
+| 2: Cryptography | Complete | Explicit decrypt/encrypt and exact PC round trips pass. |
+| 3: Transactional mutation | Complete | `set`, `set-many`, dry runs, ownership, and atomic explicit outputs pass. |
+| 4: Low-risk edits | Complete | Macca, Glory, and linked play time pass PC game-resave tests. |
+| 5: Linked and normalized edits | In progress | Three consumables and eleven linked essences are released. |
+| 6: Incomplete format research | Active research | Stats, party, position, quests, compendium, SysSave, and other profiles remain gated. |
+| 7: Stable release | Not started | Cross-platform release packaging and remaining acceptance gates are open. |
 
 ## Stage 0: Preserve and classify current knowledge
 
@@ -75,7 +88,7 @@ This roadmap is evidence-gated. A stage ends when its exit criteria pass. A cale
 - Implement `set`, `--dry-run`, explicit output, and structured change reports.
 - Preserve the input encryption state in the output.
 
-Use an internal test field until a real field reaches `confirmed-write`. Do not release the internal field as save support. Keep `--in-place` deferred until backup and atomic replacement behavior passes on Linux, Windows, and macOS.
+The framework first used an internal test field. Released fields now use the static evidence registry. `--in-place` remains deferred until backup and atomic replacement behavior pass on Linux, Windows, and macOS.
 
 ### Exit criteria
 
@@ -86,13 +99,15 @@ Use an internal test field until a real field reaches `confirmed-write`. Do not 
 
 ## Stage 4: First low-risk edits
 
-### Candidate order
+State: Complete for the PC profile.
+
+### Released order
 
 1. Macca.
 2. Glory.
-3. Play time.
+3. Linked play time.
 
-The order can change when evidence shows different risk. Do not group candidates into one release gate.
+Each field passed its own evidence and game-resave gate.
 
 ### Work for each field
 
@@ -110,6 +125,9 @@ The order can change when evidence shows different risk. Do not group candidates
 - No candidate field is enabled because another field passed.
 
 ## Stage 5: Linked and normalized edits
+
+State: In progress. Released domains are limited consumable amounts and the
+tested Aogami and Nozuchi linked essence states.
 
 Work on one domain at a time:
 
@@ -184,11 +202,13 @@ These items need a new requirement and decision before implementation:
 - remote or cloud save access;
 - automatic game-data extraction.
 
-## First implementation backlog
+## Completed foundation backlog
 
-Start implementation with these concrete tasks after Stage 0 evidence is available:
+The code-side first implementation backlog is complete. The cross-platform
+workflow template exists under `rust/.github/workflows/`, but parent-repository
+CI activation remains a maintainer action.
 
-1. Create the Cargo package and CI build matrix.
+1. Create the Cargo package and cross-platform CI template.
 2. Add checked byte range and little-endian primitive access.
 3. Add synthetic SHA-1 known-answer tests.
 4. Add exact decrypted GameSave profile detection.

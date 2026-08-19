@@ -1,7 +1,7 @@
 # Correctness and validation strategy
 
-Status: Proposed  
-Date: 2026-08-15
+Status: Active  
+Updated: 2026-08-18
 
 ## 1. Purpose
 
@@ -351,6 +351,17 @@ A valid position needs map IDs, coordinates, rotation, and a valid layline relat
 The layouts contain unknown ranges and uncertain lengths. Preserve these regions. Read support can expose only confirmed subfields. Write support is blocked.
 
 ## 8. Release gates
+
+Current gate state:
+
+| Gate | State | Evidence |
+| --- | --- | --- |
+| Read-only preview | Pass | Exact PC profile, read-only CLI tests, parser tests, and fuzz targets exist. |
+| Crypto release | Pass | AES vectors, private corpus pairs, exact round trips, and explicit outputs pass. |
+| Transactional mutation | Pass | Dry-run, diff ownership, overlap rejection, post-validation, and atomic explicit outputs pass. |
+| Released field mutations | Pass for current fields | Seventeen fields have evidence records, ownership tests, and PC game-resave evidence. |
+| In-place mutation | Blocked | Cross-platform backup and replacement proof does not exist. |
+| Stable release | Open | Packaging, active parent CI, supported game-build identification, and remaining acceptance work are incomplete. |
 
 ### 8.1 Read-only preview
 

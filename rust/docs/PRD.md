@@ -1,7 +1,7 @@
 # Product requirements: Rust save editor
 
-Status: Draft  
-Date: 2026-08-15
+Status: Active  
+Updated: 2026-08-18
 
 ## 1. Problem
 
@@ -26,9 +26,9 @@ Deliver a safe, scriptable Rust CLI that can inspect, validate, decrypt, encrypt
 
 - Validate the file envelope before an operation reads or changes a field.
 - Reject an unknown file size, format, or field state by default.
-- Never modify the source file unless the user supplies `--in-place`.
-- Create a backup before an in-place change.
-- Write to a temporary file, flush it, and rename it into place.
+- Never modify the source file.
+- Keep in-place writes and backup behavior unavailable until their separate gate passes.
+- Write to a temporary file, flush it, and atomically persist it at an explicit output path.
 - Preserve unknown bytes.
 - Validate the output before a write becomes visible.
 - Report the exact fields and decrypted byte ranges that changed.
@@ -198,24 +198,23 @@ A successful mutation must report:
 
 The report must not print the AES key. The key is not a security boundary, but repeated output has no user value.
 
-## 8. Initial feature classes
+## 8. Current feature classes
 
-| Class | First-release intent | Condition |
+| Class | State | Current condition |
 | --- | --- | --- |
-| Detect decrypted GameSave | Stage 1 required | Golden corpus and malformed-input tests pass. |
-| SHA-1 validation | Stage 1 required | Known vectors and read-only tests pass. |
-| Read-only metadata inspection | Stage 1 required | Each field has an evidence record. |
-| Detect and convert encrypted GameSave | Stage 2 required | AES known vectors and encrypted round trips pass. |
-| Macca and Glory edit | Candidate | Range and in-game load/save checks pass. |
-| Play time edit | Candidate | Duration boundary and game resave checks pass. |
-| Player name edit | Deferred | All duplicate name fields and UTF-16 limits are proven. |
-| Difficulty edit | Deferred | Both observed difficulty locations are understood. |
-| Cycles and endings edit | Deferred | Duplicate locations and game synchronization are proven. |
-| Player and demon stats | Deferred | Recalculation and reset behavior are specified. |
-| Items and essences | Deferred | Amount and metadata coupling is proven. |
-| Party and demons | Deferred | All slot and summoned-state invariants are proven. |
-| Position | Deferred | Map, layline, coordinate, and rotation rules are proven. |
-| Compendium and quests | Research only | Current layouts contain unknown fields. |
+| Exact PC GameSave detection and SHA-1 validation | Released | Profile `smtvv-pc-gamesave-449680` only. |
+| Read-only metadata and released-field inspection | Released | Encrypted and decrypted inputs are supported. |
+| Explicit decrypt and encrypt | Released | Source preservation and exact round trips pass. |
+| Transactional `set` and `set-many` | Released | Dry-run, ownership, overlap, collision, and validation checks pass. |
+| Macca and Glory edits | Released | PC load, arithmetic, and resave tests pass. |
+| Linked play-time edit | Released | Both copies advance equally after a game resave. |
+| Life Stone, Chakra Drop, and Medicine edits | Released | Limits, use, decrement, and resave tests pass. |
+| Eleven Aogami and Nozuchi essence edits | Released | Fusion, menu state, linked flags, and resave tests pass. |
+| Remaining consumables and essences | Candidate | Identity data exists; per-field evidence gates remain. |
+| Player name, difficulty, cycles, and endings | Deferred | Duplicate or linked values remain incomplete. |
+| Player and demon stats | Deferred | Game-side recalculation is not specified. |
+| Party, demons, and position | Deferred | Complete linked invariants are not proven. |
+| Compendium, quests, and SysSave | Research only | Layouts or profiles remain incomplete. |
 
 ## 9. Functional acceptance criteria
 
@@ -225,8 +224,8 @@ The first stable release is acceptable when all of these statements are true:
 2. A supported decrypted save can pass `validate` without any mutation.
 3. A wrong key result, truncated file, wrong length, bad marker, and bad hash each produce a nonzero documented exit code.
 4. A read-only command never changes file content or metadata.
-5. A failed edit leaves the source, output, and backup state unchanged.
-6. An in-place edit creates a byte-identical backup before replacement.
+5. A failed edit leaves the source unchanged and does not publish an incomplete output.
+6. In-place writes remain unavailable until the separate backup and replacement gate passes.
 7. Each released edit changes only its approved decrypted byte ranges and the integrity field.
 8. The edited save loads in the game on each platform that the release claims to support.
 9. A load and save by the game does not revert the edited value or produce an unexplained related diff.
@@ -236,7 +235,7 @@ The first stable release is acceptable when all of these statements are true:
 
 ## 10. Quality requirements
 
-- Supported Rust version policy: the latest stable compiler and one documented minimum supported Rust version.
+- Supported Rust version policy: Rust 1.85 is the minimum supported version; current stable is also tested.
 - Linux, Windows, and macOS builds must pass unit and integration tests.
 - Release archives must include checksums.
 - Unsafe Rust is not allowed without a separate accepted decision.

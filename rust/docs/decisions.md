@@ -103,25 +103,25 @@ Status values:
 ## D-012: Use a change journal, not full-buffer snapshots
 
 - Date: 2026-08-15
-- Status: Proposed
+- Status: Accepted
 - Decision: Record the original and replacement bytes for each mutation range. Use the journal for rollback and reporting.
 - Alternatives: Clone the full decrypted save before every operation; apply changes only during final serialization.
 - Reason: The save fits in memory, but a full clone for each edit is unnecessary. A small journal makes byte ownership visible.
-- Consequence: The mutation engine must reject conflicting overlaps and apply or roll back as one unit.
+- Consequence: The mutation engine records old and new range bytes, rejects overlaps, applies one complete plan to a private working buffer, and publishes output only after validation.
 
 ## D-013: Use a mature Rust CLI parser and pure report renderers
 
 - Date: 2026-08-15
-- Status: Proposed
+- Status: Accepted
 - Decision: Use `clap` derive for argument parsing. Render text and JSON from shared report types.
 - Alternatives: Manual parsing; separate command implementations for text and JSON.
 - Reason: A mature parser provides consistent help and value errors. Shared reports prevent behavior differences between output formats.
-- Consequence: Library operations do not print. The selected crate version and minimum Rust version need confirmation when implementation starts.
+- Consequence: The implementation uses `clap` derive and shared report types. Rust 1.85 is the minimum supported version.
 
 ## D-014: Use established cryptographic crates
 
 - Date: 2026-08-15
-- Status: Proposed
+- Status: Accepted
 - Decision: Use maintained RustCrypto crates for AES, ECB block handling, and SHA-1. Do not implement cryptographic primitives.
 - Reason: The save format requires established algorithms. Custom primitives add correctness and security risk without product value.
 - Consequence: Pin normal semver ranges, review dependency provenance, and verify with standard known-answer vectors and real corpus pairs.

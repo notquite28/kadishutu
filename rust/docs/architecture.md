@@ -1,7 +1,7 @@
 # Rust architecture and porting reference
 
-Status: Proposed  
-Date: 2026-08-15
+Status: Implemented baseline; active extension  
+Updated: 2026-08-18
 
 ## 1. Design rule
 
